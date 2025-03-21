@@ -492,9 +492,6 @@ const App = () => {
             }}
           />
         </Popover>
-        {
-          "Due to excessive downtime, I switched from Deutsche Bahn API to BVG API. Until they fix their issues, only Berlin and Brandenburg is available."
-        }
         {apiIsAvailable
           ? ""
           : "Es scheint aktuell ein Problem mit der Datenschnittstelle zu geben, weshalb die Website nicht wie gewohnt funktioniert. Wir müssen uns leider gedulden."}
