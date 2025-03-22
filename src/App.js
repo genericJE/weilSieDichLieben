@@ -38,6 +38,7 @@ const App = () => {
   const [exportUrl, setExportUrl] = useState("");
   const [fontSize, setFontSize] = useState(16);
   const [infoModalVisible, setInfoModalVisible] = useState(false);
+  const [remarksVisibility, setRemarksVisibility] = useState(true);
 
   const { Title, Text } = Typography;
 
@@ -70,6 +71,7 @@ const App = () => {
       // fetch data from cookie
       fetchStationsFromCookie();
       fetchFontSizeFromCookie();
+      fetchRemarksVisibilityFromCookie();
     }
   };
 
@@ -165,6 +167,22 @@ const App = () => {
       });
   };
 
+  const fetchRemarksVisibilityFromCookie = () => {
+    const cookieRemarksVisibility = document.cookie.replace(
+      /(?:(?:^|.*;\s*)remarksVisibility\s*=\s*([^;]*).*$)|^.*$/,
+      "$1"
+    );
+
+    if (cookieRemarksVisibility != null) {
+      setRemarksVisibility(JSON.parse(cookieRemarksVisibility));
+    }
+  };
+
+  const onRemarksVisibilityChange = (value) => {
+    setRemarksVisibility(value);
+    saveDataInCookie("remarksVisibility", value);
+  };
+
   const fetchFontSizeFromCookie = () => {
     const cookieFontSize = document.cookie.replace(
       /(?:(?:^|.*;\s*)fontSize\s*=\s*([^;]*).*$)|^.*$/,
@@ -179,11 +197,11 @@ const App = () => {
     }
   };
 
-  const saveFontSizeInCookie = (cookieName, data) => {
-    const cookieFontSize = `${cookieName}=${JSON.stringify(
-      data
+  const saveDataInCookie = (propertyName, value) => {
+    const cookieValue = `${propertyName}=${JSON.stringify(
+      value
     )};path=/;expires=${new Date(Date.now() + 31536000000).toUTCString()}`;
-    document.cookie = cookieFontSize;
+    document.cookie = cookieValue;
   };
 
   const fetchStationsFromCookie = () => {
@@ -196,19 +214,12 @@ const App = () => {
     }
   };
 
-  const saveStationsInCookie = (cookieName, data) => {
-    const cookieString = `${cookieName}=${JSON.stringify(
-      data
-    )};path=/;expires=${new Date(Date.now() + 31536000000).toUTCString()}`;
-    document.cookie = cookieString;
-  };
-
   const onStationSelect = (dataSet) => {
     const selectedStationsCopy = [...selectedStations];
     selectedStationsCopy.push(dataSet);
     setSelectedStations(selectedStationsCopy);
 
-    saveStationsInCookie("bvgDepatureSelectedStations", selectedStationsCopy);
+    saveDataInCookie("bvgDepatureSelectedStations", selectedStationsCopy);
   };
 
   const onStationEdit = (dataSet) => {
@@ -219,7 +230,7 @@ const App = () => {
     selectedStationsCopy[index] = dataSet;
     setSelectedStations(selectedStationsCopy);
 
-    saveStationsInCookie("bvgDepatureSelectedStations", selectedStationsCopy);
+    saveDataInCookie("bvgDepatureSelectedStations", selectedStationsCopy);
   };
 
   const removeStation = (station) => {
@@ -228,10 +239,7 @@ const App = () => {
     );
     setSelectedStations(updatedSelectedStations);
 
-    saveStationsInCookie(
-      "bvgDepatureSelectedStations",
-      updatedSelectedStations
-    );
+    saveDataInCookie("bvgDepatureSelectedStations", updatedSelectedStations);
   };
 
   const copyExportUrlToClipboard = () => {
@@ -536,30 +544,26 @@ const App = () => {
               <div
                 style={{
                   display: "flex",
-                  alignItems: "center",
                   justifyContent: "space-evenly",
                 }}
               >
-                <div>
-                  <Button
-                    onClick={() => {
-                      setFontSize((prev) => prev + 2);
-                      saveFontSizeInCookie("fontSize", fontSize + 2);
-                      buildUrlOutOfSelectedStations(selectedStations);
-                    }}
-                    icon={<PlusOutlined />}
-                  />
-                </div>
-                <div>
-                  <Button
-                    onClick={() => {
-                      setFontSize((prev) => prev - 2);
-                      saveFontSizeInCookie("fontSize", fontSize - 2);
-                      buildUrlOutOfSelectedStations(selectedStations);
-                    }}
-                    icon={<MinusOutlined />}
-                  />
-                </div>
+                <Button
+                  onClick={() => {
+                    setFontSize((prev) => prev + 2);
+                    saveDataInCookie("fontSize", fontSize + 2);
+                    buildUrlOutOfSelectedStations(selectedStations);
+                  }}
+                  icon={<PlusOutlined />}
+                />
+
+                <Button
+                  onClick={() => {
+                    setFontSize((prev) => prev - 2);
+                    saveDataInCookie("fontSize", fontSize - 2);
+                    buildUrlOutOfSelectedStations(selectedStations);
+                  }}
+                  icon={<MinusOutlined />}
+                />
               </div>
             }
           >
@@ -643,6 +647,7 @@ const App = () => {
           <DepartureDisplay
             fontSize={fontSize}
             selectedStations={selectedStations}
+            remarksVisibility={remarksVisibility}
           />
         </div>
       )}
@@ -654,6 +659,8 @@ const App = () => {
           onStationSelect={onStationSelect}
           onStationEdit={onStationEdit}
           removeStation={removeStation}
+          remarksVisibility={remarksVisibility}
+          onRemarksVisibilityChange={onRemarksVisibilityChange}
         />
       )}
       <DonationDisplay fontSize={fontSize} />
