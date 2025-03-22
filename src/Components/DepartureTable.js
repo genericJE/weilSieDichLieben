@@ -1,113 +1,110 @@
 import { Row, Col } from "antd";
-import React from "react";
+import React, { useState } from "react";
 import Marquee from "react-fast-marquee";
+import DOMPurify from "dompurify";
 
 const DepartureTable = (props) => {
+  const [isPaused, setIsPaused] = useState(false);
   const FONTSIZE = props.fontSize;
   const FONTFAMILYNAME = "DotMatrix";
 
-  const sortedDataSource = props.dataSource.sort((a, b) => {
-    return a.when - b.when;
-  });
+  const styles = {
+    columnName: {
+      fontSize: FONTSIZE,
+      fontFamily: FONTFAMILYNAME,
+    },
+    column: {
+      color: "orange",
+      fontSize: FONTSIZE,
+      fontFamily: FONTFAMILYNAME,
+    },
+    headerRow: {
+      backgroundColor: "lightGray",
+      padding: "8px",
+      position: "sticky",
+      top: "-8px",
+      zIndex: 5,
+    },
+    dataRow: {
+      backgroundColor: "black",
+      padding: "8px",
+    },
+    marquee: {
+      color: "orange",
+      fontSize: FONTSIZE * 0.8,
+      fontFamily: FONTFAMILYNAME,
+      backgroundColor: "black",
+    },
+  };
+
+  const sanitizeHTML = (html) => {
+    DOMPurify.addHook("afterSanitizeAttributes", function (node) {
+      if (node.tagName === "A") {
+        node.setAttribute("target", "_blank");
+        node.setAttribute("rel", "noopener noreferrer");
+        node.setAttribute("class", "remark-link");
+      }
+    });
+
+    return DOMPurify.sanitize(html, {
+      ALLOWED_TAGS: ["a", "b", "i", "em", "strong"],
+      ALLOWED_ATTR: ["href", "target", "rel", "class"],
+    });
+  };
+
+  const processRemarks = (remarks) => {
+    if (!remarks?.length) return "";
+    return remarks.map((remark) => remark.text).join(" *** ");
+  };
+
+  const sortedDataSource = props.dataSource.sort((a, b) => a.when - b.when);
 
   return (
     <div style={{ padding: "16px", borderRadius: "8px" }}>
-      <Row
-        style={{
-          backgroundColor: "lightGray",
-          padding: "8px",
-          position: "sticky",
-          top: "-8px",
-          zIndex: 5,
-        }}
-      >
-        <Col
-          style={{ fontSize: FONTSIZE, fontFamily: FONTFAMILYNAME }}
-          span={4}
-        >
+      <style>
+        {`
+          .remark-link, .remark-link:visited, .remark-link:hover, .remark-link:active {
+            color: #FFA500 !important;
+            text-decoration: underline !important;
+            cursor: pointer;
+          }
+        `}
+      </style>
+
+      <Row style={styles.headerRow}>
+        <Col style={styles.columnName} span={4}>
           Linie
         </Col>
-        <Col
-          style={{ fontSize: FONTSIZE, fontFamily: FONTFAMILYNAME }}
-          span={9}
-        >
+        <Col style={styles.columnName} span={9}>
           Ziel
         </Col>
-        <Col
-          style={{ fontSize: FONTSIZE, fontFamily: FONTFAMILYNAME }}
-          span={9}
-        >
+        <Col style={styles.columnName} span={9}>
           Abfahrt von
         </Col>
-        <Col
-          style={{ fontSize: FONTSIZE, fontFamily: FONTFAMILYNAME }}
-          span={2}
-        >
+        <Col style={styles.columnName} span={2}>
           Abfahrt in
         </Col>
       </Row>
-      {sortedDataSource.map((data) => {
-        // summarize remarks into one string for display
-        let remarkText = "";
-        if (data.remarks && data.remarks.length > 0) {
-          if (data.remarks.length > 1) {
-            data.remarks.forEach((remark, index) => {
-              if (index === data.remarks.length - 1) {
-                remarkText += remark.text;
-              } else {
-                remarkText += `${remark.text} *** `;
-              }
-            });
-          } else {
-            remarkText = data.remarks[0].text;
-          }
-        }
 
-        // return the row of the departure, and return the remark text if there is any
+      {sortedDataSource.map((data) => {
+        const remarkText = processRemarks(data.remarks);
+
         return (
           <div
             key={data.key}
             style={{ display: "flex", flexDirection: "column" }}
           >
-            <Row style={{ backgroundColor: "black", padding: "8px" }}>
-              <Col
-                style={{
-                  color: "orange",
-                  fontSize: FONTSIZE,
-                  fontFamily: FONTFAMILYNAME,
-                }}
-                span={4}
-              >
+            <Row style={styles.dataRow}>
+              <Col style={styles.column} span={4}>
                 {data.lineName}
               </Col>
-              <Col
-                style={{
-                  color: "orange",
-                  fontSize: FONTSIZE,
-                  fontFamily: FONTFAMILYNAME,
-                }}
-                span={9}
-              >
+              <Col style={styles.column} span={9}>
                 {data.direction}
               </Col>
-              <Col
-                style={{
-                  color: "orange",
-                  fontSize: FONTSIZE,
-                  fontFamily: FONTFAMILYNAME,
-                }}
-                span={9}
-              >
+              <Col style={styles.column} span={9}>
                 {data.departureName}
               </Col>
-              <Col
-                style={{
-                  color: "orange",
-                  fontSize: FONTSIZE,
-                  fontFamily: FONTFAMILYNAME,
-                }}
-                span={2}
-              >
+              <Col style={styles.column} span={2}>
                 {data.when == null
                   ? "Fällt aus"
                   : data.when > 0
@@ -115,16 +112,21 @@ const DepartureTable = (props) => {
                   : "Jetzt"}
               </Col>
             </Row>
-            {remarkText !== "" && props.remarksVisibility && (
+
+            {remarkText && props.remarksVisibility && (
               <Marquee
-                speed={"30"}
-                style={{
-                  color: "orange",
-                  fontSize: FONTSIZE * 0.8,
-                  fontFamily: FONTFAMILYNAME,
-                }}
+                speed={30}
+                play={!isPaused}
+                style={styles.marquee}
+                onMouseEnter={() => setIsPaused(true)}
+                onMouseLeave={() => setIsPaused(false)}
               >
-                {remarkText}
+                <span
+                  dangerouslySetInnerHTML={{ __html: sanitizeHTML(remarkText) }}
+                  onClick={(e) =>
+                    e.target.tagName === "A" && e.stopPropagation()
+                  }
+                />
               </Marquee>
             )}
           </div>
