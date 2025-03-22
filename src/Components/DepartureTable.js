@@ -1,7 +1,6 @@
 import { Row, Col } from "antd";
 import React, { useState } from "react";
 import Marquee from "react-fast-marquee";
-import DOMPurify from "dompurify";
 
 const DepartureTable = (props) => {
   const [isPaused, setIsPaused] = useState(false);
@@ -38,18 +37,43 @@ const DepartureTable = (props) => {
   };
 
   const sanitizeHTML = (html) => {
-    DOMPurify.addHook("afterSanitizeAttributes", function (node) {
-      if (node.tagName === "A") {
-        node.setAttribute("target", "_blank");
-        node.setAttribute("rel", "noopener noreferrer");
-        node.setAttribute("class", "remark-link");
-      }
-    });
+    const allowedTags = {
+      a: {
+        href: /^https?:\/\/.+/i,
+        target: "_blank",
+        rel: "noopener noreferrer",
+        class: "remark-link",
+      },
+      b: {},
+      i: {},
+      em: {},
+      strong: {},
+    };
 
-    return DOMPurify.sanitize(html, {
-      ALLOWED_TAGS: ["a", "b", "i", "em", "strong"],
-      ALLOWED_ATTR: ["href", "target", "rel", "class"],
-    });
+    return html.replace(
+      /<(\/?)([a-z0-9]+)([^>]*?)>/gi,
+      (match, closing, tag, attrs) => {
+        tag = tag.toLowerCase();
+
+        if (!allowedTags[tag]) {
+          return "";
+        }
+
+        if (closing) {
+          return `</${tag}>`;
+        }
+
+        if (tag === "a") {
+          const hrefMatch = attrs.match(/href=["']([^"']+)["']/i);
+          if (hrefMatch && allowedTags.a.href.test(hrefMatch[1])) {
+            return `<a href="${hrefMatch[1]}" target="_blank" rel="noopener noreferrer" class="remark-link">`;
+          }
+          return "";
+        }
+
+        return `<${tag}>`;
+      }
+    );
   };
 
   const processRemarks = (remarks) => {
