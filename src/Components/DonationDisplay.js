@@ -1,20 +1,41 @@
+import { useState, useEffect } from "react";
 import Marquee from "react-fast-marquee";
-import { donations } from "../Donations/donations";
 
 const DonationDisplay = (props) => {
+  const [donationsList, setDonationsList] = useState([]);
   const FONTSIZE = props.fontSize + "px";
   const FONTFAMILYNAME = "DotMatrix";
 
+  const fetchDonations = async () => {
+    try {
+      const response = await fetch("/donations.json");
+      const data = await response.json();
+      return data.donations;
+    } catch (error) {
+      console.error("Error fetching donations:", error);
+      return [];
+    }
+  };
+
+  useEffect(() => {
+    const loadDonations = async () => {
+      const donations = await fetchDonations();
+      setDonationsList(donations);
+    };
+
+    loadDonations();
+  }, []);
+
   const getDonationText = () => {
     let donationText = "Thank you so much for donating to this project: ";
-    donations.forEach((donation, index) => {
-      if (index === donations.length - 1) {
+    donationsList.forEach((donation, index) => {
+      if (index === donationsList.length - 1) {
         donationText += donation;
       } else {
         donationText += `${donation} *** `;
       }
     });
-    return donationText;
+    return donationText + " ***";
   };
 
   return (
