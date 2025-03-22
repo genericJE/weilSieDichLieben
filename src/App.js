@@ -173,7 +173,7 @@ const App = () => {
       "$1"
     );
 
-    if (cookieRemarksVisibility != null) {
+    if (cookieRemarksVisibility != null && cookieRemarksVisibility !== "") {
       setRemarksVisibility(JSON.parse(cookieRemarksVisibility));
     }
   };
