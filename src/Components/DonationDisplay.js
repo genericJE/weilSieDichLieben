@@ -8,7 +8,8 @@ const DonationDisplay = (props) => {
 
   const fetchDonations = async () => {
     try {
-      const response = await fetch("/donations.json");
+      const timestamp = new Date().getTime();
+      const response = await fetch(`/donations.json?t=${timestamp}`);
       const data = await response.json();
       return data.donations;
     } catch (error) {
