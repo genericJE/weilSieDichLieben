@@ -39,16 +39,23 @@ const App = () => {
   const [fontSize, setFontSize] = useState(16);
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [remarksVisibility, setRemarksVisibility] = useState(true);
+  const [autoHideEnabled, setAutoHideEnabled] = useState(false);
+  const [uiVisible, setUiVisible] = useState(true);
+  const autoHideTimeoutRef = React.useRef(null);
 
   const { Title, Text } = Typography;
 
   useEffect(() => {
+    // Init the app
     checkIfApiIsAvailable();
     const apiAvailableInterval = setInterval(() => {
       checkIfApiIsAvailable();
     }, 300000);
 
     fetchStationData();
+    fetchAutoHideFromCookie();
+    fetchFontSizeFromCookie();
+    fetchRemarksVisibilityFromCookie();
 
     return () => {
       clearInterval(apiAvailableInterval);
@@ -56,12 +63,45 @@ const App = () => {
   }, []);
 
   useEffect(() => {
+    // Handle export URL generation
     if (selectedStations.length > 0) {
       buildUrlOutOfSelectedStations(selectedStations);
     } else {
       setExportUrl("");
     }
   }, [selectedStations]);
+
+  useEffect(() => {
+    // Handle auto-hide functionality
+    const handleMouseMove = () => {
+      if (autoHideEnabled && !settingsAreVisible) {
+        setUiVisible(true);
+        if (autoHideTimeoutRef.current) {
+          clearTimeout(autoHideTimeoutRef.current);
+        }
+        autoHideTimeoutRef.current = setTimeout(() => {
+          if (!settingsAreVisible) {
+            setUiVisible(false);
+          }
+        }, 2000);
+      }
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+
+    if (autoHideEnabled && !settingsAreVisible) {
+      autoHideTimeoutRef.current = setTimeout(() => {
+        setUiVisible(false);
+      }, 2000);
+    }
+
+    return () => {
+      document.removeEventListener('mousemove', handleMouseMove);
+      if (autoHideTimeoutRef.current) {
+        clearTimeout(autoHideTimeoutRef.current);
+      }
+    };
+  }, [autoHideEnabled, settingsAreVisible]);
 
   const fetchStationData = () => {
     if (urlHasParams()) {
@@ -175,6 +215,25 @@ const App = () => {
 
     if (cookieRemarksVisibility != null && cookieRemarksVisibility !== "") {
       setRemarksVisibility(JSON.parse(cookieRemarksVisibility));
+    }
+  };
+
+  const fetchAutoHideFromCookie = () => {
+    const cookieAutoHide = document.cookie.replace(
+      /(?:(?:^|.*;\s*)autoHide\s*=\s*([^;]*).*$)|^.*$/,
+      "$1"
+    );
+
+    if (cookieAutoHide != null && cookieAutoHide !== "") {
+      setAutoHideEnabled(JSON.parse(cookieAutoHide));
+    }
+  };
+
+  const onAutoHideChange = (value) => {
+    setAutoHideEnabled(value);
+    saveDataInCookie("autoHide", value);
+    if (!value) {
+      setUiVisible(true);
     }
   };
 
@@ -620,50 +679,78 @@ const App = () => {
         backgroundColor: "black",
       }}
     >
-      {
-        // contextHolder is needed for the antd messages
-        contextHolder
-      }
-      <div style={{ display: "flex", padding: "8px" }}>
+      {contextHolder}
+      <div 
+        style={{ 
+          display: "flex", 
+          padding: "8px",
+          transform: uiVisible ? "translateY(0)" : "translateY(-100%)",
+          transition: "transform 0.3s ease-in-out",
+          position: "absolute",
+          width: "100%",
+          backgroundColor: "black",
+          zIndex: 1,
+          boxSizing: "border-box"
+        }}
+      >
         {renderHeaderLeftSideContent()}
         {renderHeaderMidContent()}
         {renderHeaderRightSideContent()}
       </div>
-      {!settingsAreVisible && selectedStations.length === 0 && (
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          {renderMidSettingsIcon()}
-        </div>
-      )}
-      {!settingsAreVisible && selectedStations.length > 0 && (
-        <div style={{ padding: "8px", overflow: "auto" }}>
-          <DepartureDisplay
-            fontSize={fontSize}
+      <div style={{ 
+        flex: 1, 
+        marginTop: uiVisible ? "64px" : 0,
+        transition: "margin-top 0.3s ease-in-out"
+      }}>
+        {!settingsAreVisible && selectedStations.length === 0 && (
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              height: "100%",
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+          >
+            {renderMidSettingsIcon()}
+          </div>
+        )}
+        {!settingsAreVisible && selectedStations.length > 0 && (
+          <div style={{ padding: "8px", overflow: "auto", paddingBottom: "60px" }}>
+            <DepartureDisplay
+              fontSize={fontSize}
+              selectedStations={selectedStations}
+              remarksVisibility={remarksVisibility}
+            />
+          </div>
+        )}
+        {settingsAreVisible && (
+          <Settings
+            settingsClass={settingsClass}
+            setSettingsAreVisible={setSettingsAreVisible}
             selectedStations={selectedStations}
+            onStationSelect={onStationSelect}
+            onStationEdit={onStationEdit}
+            removeStation={removeStation}
             remarksVisibility={remarksVisibility}
+            onRemarksVisibilityChange={onRemarksVisibilityChange}
+            autoHideEnabled={autoHideEnabled}
+            onAutoHideChange={onAutoHideChange}
           />
-        </div>
-      )}
-      {settingsAreVisible && (
-        <Settings
-          settingsClass={settingsClass}
-          setSettingsAreVisible={setSettingsAreVisible}
-          selectedStations={selectedStations}
-          onStationSelect={onStationSelect}
-          onStationEdit={onStationEdit}
-          removeStation={removeStation}
-          remarksVisibility={remarksVisibility}
-          onRemarksVisibilityChange={onRemarksVisibilityChange}
-        />
-      )}
-      <DonationDisplay fontSize={fontSize} />
+        )}
+      </div>
+      <div 
+        style={{ 
+          position: "fixed",
+          bottom: 0,
+          left: 0,
+          right: 0,
+          transform: uiVisible ? "translateY(0)" : "translateY(100%)",
+          transition: "transform 0.3s ease-in-out"
+        }}
+      >
+        <DonationDisplay fontSize={fontSize} />
+      </div>
     </div>
   );
 };
