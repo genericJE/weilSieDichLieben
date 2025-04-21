@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { AutoComplete, message } from "antd";
 import React, { useDeferredValue, useEffect, useState } from "react";
 
@@ -19,7 +20,7 @@ const StationFinder = (props) => {
           prepareOptionsData(res);
         });
     }
-  }, [queryStr, prepareOptionsData]);
+  }, [queryStr]);
 
   const success = () => {
     messageApi.open({
