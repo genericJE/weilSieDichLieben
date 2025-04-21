@@ -19,7 +19,7 @@ const StationFinder = (props) => {
           prepareOptionsData(res);
         });
     }
-  }, [queryStr]);
+  }, [queryStr, prepareOptionsData]);
 
   const success = () => {
     messageApi.open({
