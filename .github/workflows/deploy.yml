@@ -33,3 +33,4 @@ jobs:
         local-dir: ./build/
         server-dir: /public_html/
         protocol: ftps
+        dangerously-ignore-invalid-cert: true
