@@ -23,7 +23,7 @@ const DepartureTable = (props) => {
       backgroundColor: "lightGray",
       padding: "8px",
       position: "sticky",
-      top: "-8px",
+      top: 0,
       zIndex: 5,
     },
     dataRow: {
@@ -115,7 +115,15 @@ const DepartureTable = (props) => {
   };
 
   return (
-    <div style={{ padding: "16px", borderRadius: "8px" }}>
+    <div
+      style={{
+        padding: "16px",
+        paddingTop: "0px",
+        borderRadius: "8px",
+        maxHeight: "80vh",
+        overflowY: "auto",
+      }}
+    >
       <style>
         {`
           .remark-link, .remark-link:visited, .remark-link:hover, .remark-link:active {
