@@ -79,13 +79,27 @@ const Settings = (props) => {
                   style={{ boxShadow: "3px 3px 10px 0px rgba(0,0,0,0.5)" }}
                   size="small"
                   title={
-                    <div style={{ display: "flex" }}>
-                      <div style={{ marginRight: "8px" }}>{station.value}</div>
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <div
+                        style={{
+                          marginRight: "8px",
+                          overflow: "hidden",
+                          textOverflow: "ellipsis",
+                        }}
+                      >
+                        {station.value}
+                      </div>
                       <div
                         onClick={() => {
                           props.removeStation(station);
                         }}
-                        style={{ cursor: "pointer" }}
+                        style={{ cursor: "pointer", flexShrink: 0 }}
                       >
                         <DeleteOutlined
                           style={{ color: "red", fontSize: "16px" }}
