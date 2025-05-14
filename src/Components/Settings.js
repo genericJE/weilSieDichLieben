@@ -368,7 +368,7 @@ const Settings = (props) => {
               options={getLanguageOptions()}
               value={props.language}
               onChange={(value) => {
-                props.setLanguage(value);
+                props.onLanguageChange(value);
               }}
               style={{ width: "120px" }}
             />
@@ -386,6 +386,17 @@ const Settings = (props) => {
                 props.onRemarksVisibilityChange(checked);
               }}
               checked={props.remarksVisibility}
+            />
+          </div>
+          <div style={{ display: "flex", marginBottom: "8px" }}>
+            <div style={{ marginRight: "8px" }}>
+              {getTranslation(props.language, "showStandardRemarks")}
+            </div>
+            <Switch
+              onChange={(checked) => {
+                props.onStandardRemarksVisibilityChange(checked);
+              }}
+              checked={props.standardRemarksVisibility}
             />
           </div>
           <div style={{ display: "flex", marginBottom: "8px" }}>
