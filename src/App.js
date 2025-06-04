@@ -48,6 +48,7 @@ const App = () => {
     useState(true);
   const [autoHideEnabled, setAutoHideEnabled] = useState(false);
   const [uiVisible, setUiVisible] = useState(true);
+  const [isPulsing, setIsPulsing] = useState(false);
   const [cookieConsent, setCookieConsent] = useState(() => {
     const stored = document.cookie.replace(
       /(?:(?:^|.*;\s*)cookieConsent\s*=\s*([^;]*).*$)|^.*$/,
@@ -453,6 +454,16 @@ const App = () => {
     saveDataInCookie("bvgDepatureSelectedStations", updatedSelectedStations);
   };
 
+  const triggerPulse = () => {
+    setIsPulsing(true);
+    setTimeout(() => setIsPulsing(false), 1000);
+  };
+
+  useEffect(() => {
+    const interval = setInterval(triggerPulse, 5000);
+    return () => clearInterval(interval);
+  }, []);
+
   const copyExportUrlToClipboard = () => {
     navigator.clipboard
       .writeText(exportUrl)
@@ -700,10 +711,11 @@ const App = () => {
           width: "33.33%",
         }}
       >
-        <Icon
-          component={() => (
-            <img src={bvgIcon} style={{ height: "48px" }} alt="Icon" />
-          )}
+        <img
+          src={bvgIcon}
+          style={{ height: "48px" }}
+          alt="Icon"
+          className={isPulsing ? "pulse-animation" : ""}
         />
       </div>
     );
