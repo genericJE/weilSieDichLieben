@@ -38,6 +38,14 @@ const dictionary = {
     provideStationName: "Bitte gib den Namen einer Station ein:",
     privacyPolicy: "Datenschutzerklärung",
     termsOfService: "Nutzungsbedingungen",
+    cookieBannerText:
+      "Diese Website verwendet Cookies, um deine Einstellungen zu speichern. Wenn du keine Cookies zulässt, funktionieren einige Funktionen nicht.",
+    acceptCookies: "Cookies akzeptieren",
+    declineCookies: "Cookies ablehnen",
+    cookiesDeclinedInfo:
+      "Du hast Cookies abgelehnt. Deine Einstellungen werden nicht gespeichert.",
+    resetCookieConsent: "Cookie-Zustimmung zurücksetzen:",
+    reset: "Zurücksetzen",
   },
   en: {
     line: "Line",
@@ -77,6 +85,14 @@ const dictionary = {
     provideStationName: "Please provide the name of a station:",
     privacyPolicy: "Privacy Policy",
     termsOfService: "Terms of Service",
+    cookieBannerText:
+      "This website uses cookies to store your settings. If you decline cookies some features will not work.",
+    acceptCookies: "Accept cookies",
+    declineCookies: "Decline cookies",
+    cookiesDeclinedInfo:
+      "You declined cookies. Your settings will not be stored.",
+    resetCookieConsent: "Reset cookie consent:",
+    reset: "Reset",
   },
 };
 
