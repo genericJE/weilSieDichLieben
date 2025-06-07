@@ -1,5 +1,11 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import DepartureTable from './DepartureTable';
+jest.mock('react-leaflet', () => ({
+  MapContainer: ({ children }) => <div>{children}</div>,
+  TileLayer: () => <div></div>,
+  Marker: ({ children }) => <div>{children}</div>,
+  Tooltip: ({ children }) => <div>{children}</div>,
+}));
 
 beforeAll(() => {
   if (!window.matchMedia) {
@@ -12,6 +18,16 @@ beforeAll(() => {
       dispatchEvent: () => false,
     });
   }
+});
+
+beforeEach(() => {
+  global.fetch = jest.fn(() =>
+    Promise.resolve({ json: () => Promise.resolve({}) })
+  );
+});
+
+afterEach(() => {
+  jest.resetAllMocks();
 });
 
 describe('DepartureTable sorting', () => {
@@ -28,6 +44,8 @@ describe('DepartureTable sorting', () => {
       direction: 'Dir1',
       departureName: 'Station B',
       when: 3,
+      tripId: 'trip1',
+      stopId: 'stop1'
     },
     {
       key: '2',
@@ -35,6 +53,8 @@ describe('DepartureTable sorting', () => {
       direction: 'Dir2',
       departureName: 'Station A',
       when: 5,
+      tripId: 'trip2',
+      stopId: 'stop2'
     },
   ];
 
@@ -54,5 +74,11 @@ describe('DepartureTable sorting', () => {
     fireEvent.click(screen.getByText(/Departure from/i));
     const rowsDesc = screen.getAllByText(/Station/);
     expect(rowsDesc[0].textContent).toContain('Station B');
+  });
+
+  test('station names become clickable when tripId provided', () => {
+    render(<DepartureTable {...baseProps} dataSource={[...dataSource]} />);
+    const clickable = screen.getByText('Station B');
+    expect(clickable.style.cursor).toBe('pointer');
   });
 });
