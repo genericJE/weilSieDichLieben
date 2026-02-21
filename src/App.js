@@ -48,6 +48,7 @@ const App = () => {
   const [infoModalVisible, setInfoModalVisible] = useState(false);
   const [donationModalVisible, setDonationModalVisible] = useState(false);
   const [remarksVisibility, setRemarksVisibility] = useState(true);
+  const [hideDepartureCol, setHideDepartureCol] = useState(false);
   const [standardRemarksVisibility, setStandardRemarksVisibility] =
     useState(true);
   const [autoHideEnabled, setAutoHideEnabled] = useState(false);
@@ -81,6 +82,7 @@ const App = () => {
     fetchAutoHideFromCookie();
     fetchFontSizeFromCookie();
     fetchRemarksVisibilityFromCookie();
+    fetchHideDepartureColFromCookie();
     fetchStandardRemarksVisibilityFromCookie();
     fetchLanguageFromCookie();
 
@@ -354,6 +356,18 @@ const App = () => {
     }
   };
 
+  const fetchHideDepartureColFromCookie = () => {
+    if (!cookieConsent) return;
+    const cookieHideDepartureCol = document.cookie.replace(
+      /(?:(?:^|.*;\s*)hideDepartureCol\s*=\s*([^;]*).*$)|^.*$/,
+      "$1"
+    );
+
+    if (cookieHideDepartureCol != null && cookieHideDepartureCol !== "") {
+      setHideDepartureCol(JSON.parse(cookieHideDepartureCol));
+    }
+  };
+
   const fetchAutoHideFromCookie = () => {
     if (!cookieConsent) return;
     const cookieAutoHide = document.cookie.replace(
@@ -409,6 +423,11 @@ const App = () => {
   const onRemarksVisibilityChange = (value) => {
     setRemarksVisibility(value);
     saveDataInCookie("remarksVisibility", value);
+  };
+
+  const onHideDepartureColChange = (value) => {
+    setHideDepartureCol(value);
+    saveDataInCookie("hideDepartureCol", value);
   };
 
   const onStandardRemarksVisibilityChange = (value) => {
@@ -1030,6 +1049,7 @@ const App = () => {
               fontSize={fontSize}
               selectedStations={selectedStations}
               remarksVisibility={remarksVisibility}
+              hideDepartureCol={hideDepartureCol}
               standardRemarksVisibility={standardRemarksVisibility}
               language={language}
             />
@@ -1051,6 +1071,8 @@ const App = () => {
             }
             autoHideEnabled={autoHideEnabled}
             onAutoHideChange={onAutoHideChange}
+            hideDepartureCol={hideDepartureCol}
+            onHideDepartureColChange={onHideDepartureColChange}
             language={language}
             onLanguageChange={onLanguageChange}
             onResetCookieConsent={resetCookieConsent}

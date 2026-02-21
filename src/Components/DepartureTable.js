@@ -179,14 +179,16 @@ const DepartureTable = (props) => {
           <Col style={styles.columnName} span={4}>
             {getTranslation(props.language, "line")}
           </Col>
-          <Col style={styles.columnNameClickable} span={9} onClick={() => handleSort("direction")}>
+          <Col style={styles.columnNameClickable} span={props.hideDepartureCol ? 18 : 9} onClick={() => handleSort("direction")}>
             {getTranslation(props.language, "destination")}{" "}
             {sortField === "direction" && sortOrder !== "off" && (sortOrder === "asc" ? "↑" : "↓")}
           </Col>
-          <Col style={styles.columnNameClickable} span={9} onClick={() => handleSort("departureName")}>
-            {getTranslation(props.language, "departureName")}{" "}
-            {sortField === "departureName" && sortOrder !== "off" && (sortOrder === "asc" ? "↑" : "↓")}
-          </Col>
+          {!props.hideDepartureCol && (
+            <Col style={styles.columnNameClickable} span={9} onClick={() => handleSort("departureName")}>
+              {getTranslation(props.language, "departureName")}{" "}
+              {sortField === "departureName" && sortOrder !== "off" && (sortOrder === "asc" ? "↑" : "↓")}
+            </Col>
+          )}
           <Col style={styles.columnName} span={2}>
             {getTranslation(props.language, "when")}
           </Col>
@@ -286,11 +288,12 @@ const DepartureTable = (props) => {
               <Col style={styles.column} span={4}>
                 {data.lineName}
               </Col>
-              <Col style={styles.column} span={9}>
+              <Col style={styles.column} span={props.hideDepartureCol ? 18 : 9}>
                 {data.direction}
               </Col>
-              <Col style={styles.column} span={9}>
-                {data.tripId ? (
+              {!props.hideDepartureCol && (
+                <Col style={styles.column} span={9}>
+                  {data.tripId ? (
                   <Popover
                     content={
                       <RadarMap
@@ -312,7 +315,7 @@ const DepartureTable = (props) => {
                       }}
                     >
                       {data.departureName}
-                      <img
+                        <img
                         src={radarIcon}
                         alt="radar"
                         style={{
@@ -326,6 +329,7 @@ const DepartureTable = (props) => {
                   data.departureName
                 )}
               </Col>
+              )}
               <Col style={styles.column} span={2}>
                 {data.when == null
                   ? getTranslation(props.language, "cancelled")

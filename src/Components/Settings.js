@@ -425,6 +425,17 @@ const Settings = (props) => {
               checked={props.autoHideEnabled}
             />
           </div>
+          <div style={{ display: "flex", marginBottom: "8px", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ marginRight: "8px", flex: 1 }}>
+              {getTranslation(props.language, "hideDepartureFromColumn")}
+            </div>
+            <Switch
+              onChange={(checked) => {
+                props.onHideDepartureColChange(checked);
+              }}
+              checked={props.hideDepartureCol}
+            />
+          </div>
         </Card>
       </div>
     </div>
