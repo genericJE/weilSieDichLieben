@@ -1,5 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from "react";
 import Settings from "./Components/Settings";
 import Icon, {
   SettingOutlined,
@@ -65,11 +71,80 @@ const App = () => {
   });
   const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState(false);
   const [fontSizeModalOpen, setFontSizeModalOpen] = useState(false);
-  const autoHideTimeoutRef = React.useRef(null);
-  const instanceIdCounter = React.useRef(0);
+  const autoHideTimeoutRef = useRef(null);
+  const instanceIdCounter = useRef(0);
+  // Measure the shell bars so the content area can reserve their real height.
+  const headerRef = useRef(null);
+  const footerRef = useRef(null);
+  const [uiLayout, setUiLayout] = useState({
+    headerHeight: 0,
+    footerHeight: 0,
+  });
   const isMobile = useIsMobile();
 
   const { Title, Text } = Typography;
+
+  const measureUiLayout = useCallback(() => {
+    // Follow the actual rendered header/footer size instead of a fixed formula.
+    const nextLayout = {
+      headerHeight: headerRef.current?.getBoundingClientRect().height ?? 0,
+      footerHeight: footerRef.current?.getBoundingClientRect().height ?? 0,
+    };
+
+    setUiLayout((currentLayout) => {
+      // Skip state updates when the measured sizes did not change.
+      if (
+        currentLayout.headerHeight === nextLayout.headerHeight &&
+        currentLayout.footerHeight === nextLayout.footerHeight
+      ) {
+        return currentLayout;
+      }
+
+      return nextLayout;
+    });
+  }, []);
+
+  useLayoutEffect(() => {
+    // Measure before paint so the content does not jump.
+    measureUiLayout();
+  }, [
+    measureUiLayout,
+    fontSize,
+    isMobile,
+    language,
+    selectedStations.length,
+    settingsAreVisible,
+  ]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    window.addEventListener("resize", measureUiLayout);
+
+    if (typeof ResizeObserver === "undefined") {
+      return () => {
+        window.removeEventListener("resize", measureUiLayout);
+      };
+    }
+
+    // React to header/footer size changes caused by content or font changes.
+    const resizeObserver = new ResizeObserver(() => {
+      measureUiLayout();
+    });
+
+    if (headerRef.current) {
+      resizeObserver.observe(headerRef.current);
+    }
+
+    if (footerRef.current) {
+      resizeObserver.observe(footerRef.current);
+    }
+
+    return () => {
+      window.removeEventListener("resize", measureUiLayout);
+      resizeObserver.disconnect();
+    };
+  }, [measureUiLayout]);
 
   useEffect(() => {
     // Init the app
@@ -988,6 +1063,11 @@ const App = () => {
     );
   };
 
+  // Reserve shell space only while the bars are visible.
+  const footerVisible = uiVisible && !settingsAreVisible;
+  const headerOffset = uiVisible ? uiLayout.headerHeight : 0;
+  const footerOffset = footerVisible ? uiLayout.footerHeight : 0;
+
   return (
     <div
       style={{
@@ -996,10 +1076,13 @@ const App = () => {
         flexDirection: "column",
         height: "100vh",
         backgroundColor: "black",
+        position: "relative",
       }}
     >
       {contextHolder}
       <div
+        ref={headerRef}
+        data-testid="app-header"
         style={{
           display: "flex",
           padding: "8px",
@@ -1017,10 +1100,16 @@ const App = () => {
         {renderHeaderRightSideContent()}
       </div>
       <div
+        data-testid="app-content"
         style={{
           flex: 1,
-          marginTop: uiVisible ? "64px" : 0,
-          transition: "margin-top 0.3s ease-in-out",
+          // Let the scroll area shrink inside the flex layout.
+          minHeight: 0,
+          // Collapse the reserved space when auto-hide slides the bars away.
+          paddingTop: headerOffset,
+          paddingBottom: footerOffset,
+          transition: "padding 0.3s ease-in-out",
+          boxSizing: "border-box",
         }}
       >
         {!settingsAreVisible && selectedStations.length === 0 && (
@@ -1038,11 +1127,14 @@ const App = () => {
         )}
         {!settingsAreVisible && selectedStations.length > 0 && (
           <div
-            style={{ 
-              padding: "8px", 
-              overflow: "auto", 
-              height: `calc(100vh - ${uiVisible ? '64px' : '0px'} - ${fontSize + 56}px)`,
-              boxSizing: "border-box"
+            data-testid="departure-scroll-container"
+            style={{
+              padding: "8px",
+              overflow: "auto",
+              // Fill the remaining height after the measured shell offsets.
+              height: "100%",
+              minHeight: 0,
+              boxSizing: "border-box",
             }}
           >
             <DepartureDisplay
@@ -1080,12 +1172,14 @@ const App = () => {
         )}
       </div>
       <div
+        ref={footerRef}
+        data-testid="app-footer"
         style={{
           position: "fixed",
           bottom: 0,
           left: 0,
           right: 0,
-          transform: uiVisible && !settingsAreVisible ? "translateY(0)" : "translateY(100%)",
+          transform: footerVisible ? "translateY(0)" : "translateY(100%)",
           transition: "transform 0.3s ease-in-out",
         }}
       >
