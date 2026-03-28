@@ -1,7 +1,7 @@
 const dictionary = {
   de: {
     line: "Linie",
-    destination: "Ziel",
+    direction: "Richtung",
     departureName: "Abfahrt von",
     when: "Abfahrt in",
     now: "Jetzt",
@@ -68,7 +68,7 @@ const dictionary = {
   },
   en: {
     line: "Line",
-    destination: "Destination",
+    direction: "Direction",
     departureName: "Departure from",
     when: "Departure in",
     now: "Now",
