@@ -99,4 +99,36 @@ describe('DepartureTable sorting', () => {
     const clickable = screen.getByText('Station B');
     expect(clickable.style.cursor).toBe('pointer');
   });
+
+  test('default sorting does not mutate the provided dataSource array', () => {
+    const unsortedDataSource = [
+      {
+        key: '2',
+        lineName: 'B',
+        direction: 'Dir2',
+        departureName: 'Station A',
+        when: 5,
+        tripId: 'trip2',
+        stopId: 'stop2'
+      },
+      {
+        key: '1',
+        lineName: 'A',
+        direction: 'Dir1',
+        departureName: 'Station B',
+        when: 3,
+        tripId: 'trip1',
+        stopId: 'stop1'
+      },
+    ];
+
+    render(<DepartureTable {...baseProps} dataSource={unsortedDataSource} />);
+
+    const renderedRows = screen.getAllByText(/Station/);
+    expect(renderedRows[0].textContent).toContain('Station B');
+    expect(unsortedDataSource.map((item) => item.departureName)).toEqual([
+      'Station A',
+      'Station B',
+    ]);
+  });
 });
