@@ -132,7 +132,7 @@ const DepartureTable = (props) => {
 
   const getSortedData = () => {
     if (sortOrder === "off")
-      return props.dataSource.sort((a, b) => a.when - b.when);
+      return [...props.dataSource].sort((a, b) => a.when - b.when);
 
     return [...props.dataSource].sort((a, b) => {
       const comparison = a[sortField].localeCompare(b[sortField]);
