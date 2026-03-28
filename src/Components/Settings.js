@@ -49,6 +49,12 @@ const Settings = (props) => {
     }));
   };
 
+  const toggleSwitchStyle = {
+    marginLeft: "6px",
+    marginRight: "4px",
+    flexShrink: 0,
+  };
+
   return (
     <div
       className={props.settingsClass}
@@ -127,6 +133,7 @@ const Settings = (props) => {
                         {getTranslation(props.language, "sBahn")}
                       </div>
                       <Switch
+                        style={toggleSwitchStyle}
                         onChange={(checked) => {
                           onPropChange(checked, station, "suburban");
                         }}
@@ -143,6 +150,7 @@ const Settings = (props) => {
                         {getTranslation(props.language, "subway")}
                       </div>
                       <Switch
+                        style={toggleSwitchStyle}
                         onChange={(checked) => {
                           onPropChange(checked, station, "subway");
                         }}
@@ -159,6 +167,7 @@ const Settings = (props) => {
                         {getTranslation(props.language, "tram")}
                       </div>
                       <Switch
+                        style={toggleSwitchStyle}
                         onChange={(checked) => {
                           onPropChange(checked, station, "tram");
                         }}
@@ -175,6 +184,7 @@ const Settings = (props) => {
                         {getTranslation(props.language, "bus")}
                       </div>
                       <Switch
+                        style={toggleSwitchStyle}
                         onChange={(checked) => {
                           onPropChange(checked, station, "bus");
                         }}
@@ -191,6 +201,7 @@ const Settings = (props) => {
                         {getTranslation(props.language, "ferry")}
                       </div>
                       <Switch
+                        style={toggleSwitchStyle}
                         onChange={(checked) => {
                           onPropChange(checked, station, "ferry");
                         }}
@@ -207,6 +218,7 @@ const Settings = (props) => {
                         {getTranslation(props.language, "icIce")}
                       </div>
                       <Switch
+                        style={toggleSwitchStyle}
                         onChange={(checked) => {
                           onPropChange(checked, station, "express");
                         }}
@@ -223,6 +235,7 @@ const Settings = (props) => {
                         {getTranslation(props.language, "rbRe")}
                       </div>
                       <Switch
+                        style={toggleSwitchStyle}
                         onChange={(checked) => {
                           onPropChange(checked, station, "regional");
                         }}
@@ -335,18 +348,30 @@ const Settings = (props) => {
           padding: "16px",
           flex: "1 1 50%",
           minHeight: 0,
+          display: "flex",
           overflow: "hidden",
           backgroundColor: "lightgray",
         }}
       >
         <Card
+          className="general-settings-card"
           style={{
             boxShadow: "3px 3px 10px 0px rgba(0,0,0,0.5)",
-            height: "calc(100% - 64px)",
+            height: "100%",
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            overflow: "hidden",
           }}
-          bodyStyle={{
-            overflowY: "auto",
-            paddingRight: "4px",
+          styles={{
+            body: {
+              flex: "1 1 auto",
+              minHeight: 0,
+              display: "flex",
+              flexDirection: "column",
+              overflowY: "auto",
+              paddingRight: "4px",
+            },
           }}
           size="small"
           title={getTranslation(props.language, "generalSettings")}
@@ -397,6 +422,7 @@ const Settings = (props) => {
               {getTranslation(props.language, "showRemarks")}
             </div>
             <Switch
+              style={toggleSwitchStyle}
               onChange={(checked) => {
                 props.onRemarksVisibilityChange(checked);
               }}
@@ -408,6 +434,7 @@ const Settings = (props) => {
               {getTranslation(props.language, "showStandardRemarks")}
             </div>
             <Switch
+              style={toggleSwitchStyle}
               onChange={(checked) => {
                 props.onStandardRemarksVisibilityChange(checked);
               }}
@@ -419,6 +446,7 @@ const Settings = (props) => {
               {getTranslation(props.language, "hideHeaderFooter")}
             </div>
             <Switch
+              style={toggleSwitchStyle}
               onChange={(checked) => {
                 props.onAutoHideChange(checked);
               }}
@@ -430,6 +458,7 @@ const Settings = (props) => {
               {getTranslation(props.language, "hideDepartureFromColumn")}
             </div>
             <Switch
+              style={toggleSwitchStyle}
               onChange={(checked) => {
                 props.onHideDepartureColChange(checked);
               }}
