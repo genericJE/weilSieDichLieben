@@ -20,13 +20,25 @@ beforeAll(() => {
   }
 });
 
+const originalInnerWidth = window.innerWidth;
+
 beforeEach(() => {
+  Object.defineProperty(window, 'innerWidth', {
+    writable: true,
+    configurable: true,
+    value: 768,
+  });
   global.fetch = jest.fn(() =>
     Promise.resolve({ json: () => Promise.resolve({}) })
   );
 });
 
 afterEach(() => {
+  Object.defineProperty(window, 'innerWidth', {
+    writable: true,
+    configurable: true,
+    value: originalInnerWidth,
+  });
   jest.resetAllMocks();
 });
 
@@ -130,5 +142,27 @@ describe('DepartureTable sorting', () => {
       'Station A',
       'Station B',
     ]);
+  });
+
+  test('hideDepartureCol uses the wider destination and when columns on desktop', () => {
+    render(
+      <DepartureTable
+        {...baseProps}
+        hideDepartureCol
+        dataSource={[...dataSource]}
+      />
+    );
+
+    expect(screen.queryByText(/Departure from/i)).toBeNull();
+
+    const destinationHeaderColumn = screen.getByText(/Destination/i, { selector: '.ant-col' });
+    const whenHeaderColumn = screen.getByText(/Departure in/i, { selector: '.ant-col' });
+    const whenDataColumn = screen.getByText('3 min', { selector: '.ant-col' });
+
+    expect(destinationHeaderColumn.className).toContain('ant-col-16');
+    expect(whenHeaderColumn.className).toContain('ant-col-4');
+    expect(whenHeaderColumn.style.textAlign).toBe('right');
+    expect(whenDataColumn.className).toContain('ant-col-4');
+    expect(whenDataColumn.style.textAlign).toBe('right');
   });
 });

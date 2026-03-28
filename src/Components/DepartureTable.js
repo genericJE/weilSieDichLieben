@@ -179,7 +179,7 @@ const DepartureTable = (props) => {
           <Col style={styles.columnName} span={4}>
             {getTranslation(props.language, "line")}
           </Col>
-          <Col style={styles.columnNameClickable} span={props.hideDepartureCol ? 18 : 9} onClick={() => handleSort("direction")}>
+          <Col style={styles.columnNameClickable} span={props.hideDepartureCol ? 16 : 9} onClick={() => handleSort("direction")}>
             {getTranslation(props.language, "destination")}{" "}
             {sortField === "direction" && sortOrder !== "off" && (sortOrder === "asc" ? "↑" : "↓")}
           </Col>
@@ -189,7 +189,7 @@ const DepartureTable = (props) => {
               {sortField === "departureName" && sortOrder !== "off" && (sortOrder === "asc" ? "↑" : "↓")}
             </Col>
           )}
-          <Col style={styles.columnName} span={2}>
+          <Col style={{ ...styles.columnName, textAlign: "right" }} span={props.hideDepartureCol ? 4 : 2}>
             {getTranslation(props.language, "when")}
           </Col>
         </Row>
@@ -288,7 +288,7 @@ const DepartureTable = (props) => {
               <Col style={styles.column} span={4}>
                 {data.lineName}
               </Col>
-              <Col style={styles.column} span={props.hideDepartureCol ? 18 : 9}>
+              <Col style={styles.column} span={props.hideDepartureCol ? 16 : 9}>
                 {data.direction}
               </Col>
               {!props.hideDepartureCol && (
@@ -330,7 +330,7 @@ const DepartureTable = (props) => {
                 )}
               </Col>
               )}
-              <Col style={styles.column} span={2}>
+              <Col style={{ ...styles.column, textAlign: "right" }} span={props.hideDepartureCol ? 4 : 2}>
                 {data.when == null
                   ? getTranslation(props.language, "cancelled")
                   : data.when > 0
