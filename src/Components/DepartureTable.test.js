@@ -88,22 +88,35 @@ describe('DepartureTable sorting', () => {
     expect(rowsDesc[0].textContent).toContain('Station B');
   });
 
-  test('clicking destination header toggles alphabetical sort by direction', () => {
+  test('clicking direction header toggles alphabetical sort by direction', () => {
     render(<DepartureTable {...baseProps} dataSource={[...dataSource]} />);
 
     // initial order is sorted by time ascending -> Dir1 first (when: 3)
-    const rowsBefore = screen.getAllByText(/Dir/);
+    const rowsBefore = screen.getAllByText(/Dir\d/);
     expect(rowsBefore[0].textContent).toContain('Dir1');
 
-    // click destination header to sort ascending -> Dir1 first
-    fireEvent.click(screen.getByText(/Destination/i));
+    // click direction header to sort ascending -> Dir1 first
+    fireEvent.click(screen.getByText(/Direction/i));
     const rowsAsc = screen.getAllByText(/Dir\d/);
     expect(rowsAsc[0].textContent).toContain('Dir1');
 
     // click again to sort descending -> Dir2 first
-    fireEvent.click(screen.getByText(/Destination/i));
+    fireEvent.click(screen.getByText(/Direction/i));
     const rowsDesc = screen.getAllByText(/Dir\d/);
     expect(rowsDesc[0].textContent).toContain('Dir2');
+  });
+
+  test('shortens the when header when hideDepartureCol is enabled', () => {
+    render(
+      <DepartureTable
+        {...baseProps}
+        hideDepartureCol={true}
+        dataSource={[...dataSource]}
+      />
+    );
+
+    expect(screen.getByText('Departure')).toBeTruthy();
+    expect(screen.queryByText('Departure in')).toBeNull();
   });
 
   test('station names become clickable when tripId provided', () => {
@@ -144,7 +157,7 @@ describe('DepartureTable sorting', () => {
     ]);
   });
 
-  test('hideDepartureCol uses the wider destination and when columns on desktop', () => {
+  test('hideDepartureCol uses the wider direction and when columns on desktop', () => {
     render(
       <DepartureTable
         {...baseProps}
@@ -155,11 +168,15 @@ describe('DepartureTable sorting', () => {
 
     expect(screen.queryByText(/Departure from/i)).toBeNull();
 
-    const destinationHeaderColumn = screen.getByText(/Destination/i, { selector: '.ant-col' });
-    const whenHeaderColumn = screen.getByText(/Departure in/i, { selector: '.ant-col' });
+    const directionHeaderColumn = screen.getByText(/Direction/i, {
+      selector: '.ant-col'
+    });
+    const whenHeaderColumn = screen.getByText('Departure', {
+      selector: '.ant-col'
+    });
     const whenDataColumn = screen.getByText('3 min', { selector: '.ant-col' });
 
-    expect(destinationHeaderColumn.className).toContain('ant-col-16');
+    expect(directionHeaderColumn.className).toContain('ant-col-16');
     expect(whenHeaderColumn.className).toContain('ant-col-4');
     expect(whenHeaderColumn.style.textAlign).toBe('right');
     expect(whenDataColumn.className).toContain('ant-col-4');

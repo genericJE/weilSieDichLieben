@@ -15,6 +15,7 @@ const DepartureTable = (props) => {
   const isMobile = useIsMobile();
   const FONTSIZE = props.fontSize;
   const FONTFAMILYNAME = "DotMatrix";
+  const whenHeaderKey = props.hideDepartureCol ? "departure" : "when";
 
   const mobileFontSize = isMobile ? FONTSIZE * 0.85 : FONTSIZE;
 
@@ -179,8 +180,12 @@ const DepartureTable = (props) => {
           <Col style={styles.columnName} span={4}>
             {getTranslation(props.language, "line")}
           </Col>
-          <Col style={styles.columnNameClickable} span={props.hideDepartureCol ? 16 : 9} onClick={() => handleSort("direction")}>
-            {getTranslation(props.language, "destination")}{" "}
+          <Col
+            style={styles.columnNameClickable}
+            span={props.hideDepartureCol ? 16 : 9}
+            onClick={() => handleSort("direction")}
+          >
+            {getTranslation(props.language, "direction")}{" "}
             {sortField === "direction" && sortOrder !== "off" && (sortOrder === "asc" ? "↑" : "↓")}
           </Col>
           {!props.hideDepartureCol && (
@@ -189,8 +194,11 @@ const DepartureTable = (props) => {
               {sortField === "departureName" && sortOrder !== "off" && (sortOrder === "asc" ? "↑" : "↓")}
             </Col>
           )}
-          <Col style={{ ...styles.columnName, textAlign: "right" }} span={props.hideDepartureCol ? 4 : 2}>
-            {getTranslation(props.language, "when")}
+          <Col
+            style={{ ...styles.columnName, textAlign: "right" }}
+            span={props.hideDepartureCol ? 4 : 2}
+          >
+            {getTranslation(props.language, whenHeaderKey)}
           </Col>
         </Row>
       )}
@@ -202,10 +210,10 @@ const DepartureTable = (props) => {
             {getTranslation(props.language, "line")}
           </Col>
           <Col style={styles.columnName} span={12}>
-            {getTranslation(props.language, "destination")}
+            {getTranslation(props.language, "direction")}
           </Col>
           <Col style={{ ...styles.columnName, textAlign: "right" }} span={8}>
-            {getTranslation(props.language, "when")}
+            {getTranslation(props.language, whenHeaderKey)}
           </Col>
         </Row>
       )}
