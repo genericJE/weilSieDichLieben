@@ -1085,7 +1085,7 @@ const App = () => {
           bottom: 0,
           left: 0,
           right: 0,
-          transform: uiVisible && !(isMobile && settingsAreVisible) ? "translateY(0)" : "translateY(100%)",
+          transform: uiVisible && !settingsAreVisible ? "translateY(0)" : "translateY(100%)",
           transition: "transform 0.3s ease-in-out",
         }}
       >
