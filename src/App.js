@@ -39,6 +39,7 @@ import DonationDisplay from "./Components/DonationDisplay";
 import CookieBanner from "./Components/CookieBanner";
 import LegalModals from "./Components/LegalModals";
 import { getTranslation } from "./dictionary";
+import { getCookie, setCookie, deleteCookie, getCookieJSON } from "./utils/cookies";
 
 const App = () => {
   const [language, setLanguage] = useState("de");
@@ -61,10 +62,7 @@ const App = () => {
   const [uiVisible, setUiVisible] = useState(true);
   const [isPulsing, setIsPulsing] = useState(false);
   const [cookieConsent, setCookieConsent] = useState(() => {
-    const stored = document.cookie.replace(
-      /(?:(?:^|.*;\s*)cookieConsent\s*=\s*([^;]*).*$)|^.*$/,
-      "$1"
-    );
+    const stored = getCookie("cookieConsent");
     if (stored === "true") return true;
     if (stored === "false") return false;
     return null;
@@ -168,10 +166,7 @@ const App = () => {
       .then((response) => response.json())
       .then((data) => {
         const storedVersion = cookieConsent
-          ? document.cookie.replace(
-              /(?:(?:^|.*;\s*)notificationVersion\s*=\s*([^;]*).*$)|^.*$/,
-              "$1"
-            ) || "0"
+          ? getCookie("notificationVersion") || "0"
           : "0";
         if (data.version > parseInt(storedVersion)) {
           const title =
@@ -198,11 +193,7 @@ const App = () => {
                 size="small"
                 onClick={() => {
                   if (cookieConsent) {
-                    document.cookie = `notificationVersion=${
-                      data.version
-                    };path=/;expires=${new Date(
-                      Date.now() + 31536000000
-                    ).toUTCString()}`;
+                    setCookie("notificationVersion", data.version);
                   }
                   notification.destroy();
                 }}
@@ -265,16 +256,12 @@ const App = () => {
   }, [autoHideEnabled, settingsAreVisible]);
 
   const acceptCookies = () => {
-    document.cookie = `cookieConsent=true;path=/;expires=${new Date(
-      Date.now() + 31536000000
-    ).toUTCString()}`;
+    setCookie("cookieConsent", true);
     setCookieConsent(true);
   };
 
   const declineCookies = () => {
-    document.cookie = `cookieConsent=false;path=/;expires=${new Date(
-      Date.now() + 31536000000
-    ).toUTCString()}`;
+    setCookie("cookieConsent", false);
     setCookieConsent(false);
     messageApi.open({
       type: "warning",
@@ -283,8 +270,7 @@ const App = () => {
   };
 
   const resetCookieConsent = () => {
-    document.cookie =
-      "cookieConsent=;path=/;expires=Thu, 01 Jan 1970 00:00:00 GMT";
+    deleteCookie("cookieConsent");
     setCookieConsent(null);
   };
 
@@ -372,8 +358,8 @@ const App = () => {
     const destinationId = urlParams.getAll("destinationId");
     const destinationName = urlParams.getAll("destinationName");
 
-    const fontSize = urlParams.get("fontSize");
-    setFontSize(parseInt(fontSize));
+    const parsedFontSize = parseInt(urlParams.get("fontSize"), 10);
+    setFontSize(Number.isNaN(parsedFontSize) ? 16 : parsedFontSize);
 
     const fromUrlRetrievedStations = id.map((_, index) => {
       return {
@@ -421,65 +407,32 @@ const App = () => {
 
   const fetchRemarksVisibilityFromCookie = () => {
     if (!cookieConsent) return;
-    const cookieRemarksVisibility = document.cookie.replace(
-      /(?:(?:^|.*;\s*)remarksVisibility\s*=\s*([^;]*).*$)|^.*$/,
-      "$1"
-    );
-
-    if (cookieRemarksVisibility != null && cookieRemarksVisibility !== "") {
-      setRemarksVisibility(JSON.parse(cookieRemarksVisibility));
-    }
+    const value = getCookieJSON("remarksVisibility", undefined);
+    if (value !== undefined) setRemarksVisibility(value);
   };
 
   const fetchHideDepartureColFromCookie = () => {
     if (!cookieConsent) return;
-    const cookieHideDepartureCol = document.cookie.replace(
-      /(?:(?:^|.*;\s*)hideDepartureCol\s*=\s*([^;]*).*$)|^.*$/,
-      "$1"
-    );
-
-    if (cookieHideDepartureCol != null && cookieHideDepartureCol !== "") {
-      setHideDepartureCol(JSON.parse(cookieHideDepartureCol));
-    }
+    const value = getCookieJSON("hideDepartureCol", undefined);
+    if (value !== undefined) setHideDepartureCol(value);
   };
 
   const fetchAutoHideFromCookie = () => {
     if (!cookieConsent) return;
-    const cookieAutoHide = document.cookie.replace(
-      /(?:(?:^|.*;\s*)autoHide\s*=\s*([^;]*).*$)|^.*$/,
-      "$1"
-    );
-
-    if (cookieAutoHide != null && cookieAutoHide !== "") {
-      setAutoHideEnabled(JSON.parse(cookieAutoHide));
-    }
+    const value = getCookieJSON("autoHide", undefined);
+    if (value !== undefined) setAutoHideEnabled(value);
   };
 
   const fetchStandardRemarksVisibilityFromCookie = () => {
     if (!cookieConsent) return;
-    const cookieStandardRemarksVisibility = document.cookie.replace(
-      /(?:(?:^|.*;\s*)standardRemarksVisibility\s*=\s*([^;]*).*$)|^.*$/,
-      "$1"
-    );
-
-    if (
-      cookieStandardRemarksVisibility != null &&
-      cookieStandardRemarksVisibility !== ""
-    ) {
-      setStandardRemarksVisibility(JSON.parse(cookieStandardRemarksVisibility));
-    }
+    const value = getCookieJSON("standardRemarksVisibility", undefined);
+    if (value !== undefined) setStandardRemarksVisibility(value);
   };
 
   const fetchLanguageFromCookie = () => {
     if (!cookieConsent) return;
-    const cookieLanguage = document.cookie.replace(
-      /(?:(?:^|.*;\s*)language\s*=\s*([^;]*).*$)|^.*$/,
-      "$1"
-    );
-
-    if (cookieLanguage && cookieLanguage !== "") {
-      setLanguage(JSON.parse(cookieLanguage));
-    }
+    const value = getCookieJSON("language", undefined);
+    if (value !== undefined) setLanguage(value);
   };
 
   const onLanguageChange = (value) => {
@@ -512,46 +465,30 @@ const App = () => {
 
   const fetchFontSizeFromCookie = () => {
     if (!cookieConsent) return;
-    const cookieFontSize = document.cookie.replace(
-      /(?:(?:^|.*;\s*)fontSize\s*=\s*([^;]*).*$)|^.*$/,
-      "$1"
-    );
-
-    // legacy support for users who dont have the fontSize cookie
-    if (cookieFontSize !== "null" && cookieFontSize !== "") {
-      setFontSize(parseInt(cookieFontSize));
-    } else {
-      setFontSize(16);
-    }
+    const raw = getCookie("fontSize");
+    const parsed = parseInt(raw, 10);
+    setFontSize(Number.isNaN(parsed) ? 16 : parsed);
   };
 
   const saveDataInCookie = (propertyName, value) => {
     if (!cookieConsent) return;
-    const cookieValue = `${propertyName}=${JSON.stringify(
-      value
-    )};path=/;expires=${new Date(Date.now() + 31536000000).toUTCString()}`;
-    document.cookie = cookieValue;
+    setCookie(propertyName, value);
   };
 
   const fetchStationsFromCookie = () => {
     if (!cookieConsent) return;
-    const cookieSelectedStations = document.cookie.replace(
-      /(?:(?:^|.*;\s*)bvgDepatureSelectedStations\s*=\s*([^;]*).*$)|^.*$/,
-      "$1"
-    );
-    if (cookieSelectedStations) {
-      const stations = JSON.parse(cookieSelectedStations);
-      let maxId = 0;
-      const migratedStations = stations.map((station, index) => {
-        if (station.instanceId == null) {
-          station = { ...station, instanceId: index + 1 };
-        }
-        maxId = Math.max(maxId, station.instanceId);
-        return station;
-      });
-      instanceIdCounter.current = maxId;
-      setSelectedStations(migratedStations);
-    }
+    const stations = getCookieJSON("bvgDepatureSelectedStations", null);
+    if (!Array.isArray(stations)) return;
+    let maxId = 0;
+    const migratedStations = stations.map((station, index) => {
+      if (station.instanceId == null) {
+        station = { ...station, instanceId: index + 1 };
+      }
+      maxId = Math.max(maxId, station.instanceId);
+      return station;
+    });
+    instanceIdCounter.current = maxId;
+    setSelectedStations(migratedStations);
   };
 
   const onStationSelect = (dataSet) => {
