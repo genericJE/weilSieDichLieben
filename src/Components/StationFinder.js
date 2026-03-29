@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { AutoComplete, message } from "antd";
-import React, { useDeferredValue, useEffect, useState } from "react";
+import React, { useDeferredValue, useEffect, useRef, useState } from "react";
 import { getTranslation } from "../dictionary";
 
 const StationFinder = (props) => {
@@ -9,18 +9,29 @@ const StationFinder = (props) => {
   const [value, setValue] = useState();
   const deferredOptions = useDeferredValue(options);
   const [queryStr, setQueryStr] = useState("");
+  const debounceTimer = useRef(null);
   const baseFetchUrl =
     "https://v6.bvg.transport.rest/locations?poi=false&addresses=false&query=";
 
   useEffect(() => {
-    const fetchUrl = baseFetchUrl + queryStr;
-    if (queryStr !== "") {
+    if (queryStr === "") return;
+
+    // Debounce API calls to avoid hitting the API on every keystroke
+    clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
+      const fetchUrl = baseFetchUrl + queryStr;
       fetch(fetchUrl)
         .then((res) => res.json())
         .then((res) => {
           prepareOptionsData(res);
+        })
+        .catch((error) => {
+          console.error("Error fetching stations:", error);
+          setOptions([]);
         });
-    }
+    }, 300);
+
+    return () => clearTimeout(debounceTimer.current);
   }, [queryStr]);
 
   const success = () => {
