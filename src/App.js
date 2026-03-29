@@ -198,7 +198,7 @@ const App = () => {
                   notification.destroy();
                 }}
               >
-                Nicht mehr anzeigen
+                {getTranslation(language, "dismissNotification")}
               </Button>
             ),
           });
@@ -536,13 +536,13 @@ const App = () => {
       .then(() => {
         messageApi.open({
           type: "success",
-          content: "Export-URL in die Zwischenablage kopiert!",
+          content: getTranslation(language, "copySuccess"),
         });
       })
       .catch((error) => {
         messageApi.open({
           type: "error",
-          content: `Export-URL konnte nicht in die Zwischenablage kopiert werden! (${error}})`,
+          content: `${getTranslation(language, "copyError")} (${error})`,
         });
       });
   };
@@ -601,7 +601,7 @@ const App = () => {
           );
         }}
       >
-        <div style={{ marginRight: "8px" }}>Stationen konfigurieren:</div>
+        <div style={{ marginRight: "8px" }}>{getTranslation(language, "configureStations")}</div>
         <SettingOutlined style={{ fontSize: "32px", color: "#f0d722" }} />
       </div>
     );
@@ -609,7 +609,7 @@ const App = () => {
 
   const renderInfoModal = () => (
     <Modal
-      title="Informationen und Impressum"
+      title={getTranslation(language, "infoModalTitle")}
       open={infoModalVisible}
       footer={null}
       onCancel={() => {
@@ -801,7 +801,7 @@ const App = () => {
           {renderHamburgerMenu()}
           {!apiIsAvailable && (
             <span style={{ color: "#f0d722", fontSize: "12px" }}>
-              API nicht verfügbar
+              {getTranslation(language, "apiUnavailable")}
             </span>
           )}
         </div>
@@ -843,7 +843,7 @@ const App = () => {
         />
         <Popover
           placement="bottomLeft"
-          title="Check out this project on GitHub"
+          title={getTranslation(language, "githubPopoverTitle")}
           content={
             <Space
               style={{ width: "500px", overflow: "auto" }}
@@ -851,9 +851,7 @@ const App = () => {
               size={1}
             >
               <Text>
-                If you are a developer, feel free to check out the repo of this
-                project on GitHub. I'm always happy if you have a great feature
-                idea and contribute to this open source project!
+                {getTranslation(language, "githubPopoverText")}
               </Text>
               <a
                 href="https://github.com/NikBLN/weilSieDichLieben"
@@ -861,7 +859,7 @@ const App = () => {
                 rel="noreferrer"
               >
                 <Button style={{ marginTop: "8px" }} type="primary">
-                  Visit GitHub
+                  GitHub
                 </Button>
               </a>
             </Space>
@@ -878,7 +876,7 @@ const App = () => {
         </Popover>
         {apiIsAvailable
           ? ""
-          : "Es scheint aktuell ein Problem mit der Datenschnittstelle zu geben, weshalb die Website nicht wie gewohnt funktioniert. Wir müssen uns leider gedulden."}
+          : getTranslation(language, "apiUnavailableDetails")}
       </div>
     );
   };
