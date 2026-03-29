@@ -1,5 +1,5 @@
 import { Row, Col, Popover, Modal } from "antd";
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import Marquee from "react-fast-marquee";
 import { getTranslation } from "../dictionary";
 import radarIcon from "../images/radar.png";
@@ -130,7 +130,7 @@ const DepartureTable = (props) => {
     }
   };
 
-  const getSortedData = () => {
+  const sortedData = useMemo(() => {
     if (sortOrder === "off")
       return [...props.dataSource].sort((a, b) => a.when - b.when);
 
@@ -138,11 +138,10 @@ const DepartureTable = (props) => {
       const comparison = a[sortField].localeCompare(b[sortField]);
       return sortOrder === "asc" ? comparison : -comparison;
     });
-  };
+  }, [props.dataSource, sortOrder, sortField]);
 
   // Group data by departureName for mobile view
-  const getGroupedData = () => {
-    const sortedData = getSortedData();
+  const groupedData = useMemo(() => {
     const groups = {};
 
     sortedData.forEach((item) => {
@@ -154,7 +153,7 @@ const DepartureTable = (props) => {
     });
 
     return groups;
-  };
+  }, [sortedData]);
 
   return (
     <div
@@ -219,7 +218,7 @@ const DepartureTable = (props) => {
       )}
 
       {/* Mobile: Grouped view */}
-      {isMobile && Object.entries(getGroupedData()).map(([groupName, items]) => (
+      {isMobile && Object.entries(groupedData).map(([groupName, items]) => (
         <div key={groupName}>
           {/* Group Header */}
           <div
@@ -284,7 +283,7 @@ const DepartureTable = (props) => {
       ))}
 
       {/* Desktop: Regular view */}
-      {!isMobile && getSortedData().map((data) => {
+      {!isMobile && sortedData.map((data) => {
         const remarkText = processRemarks(data.remarks);
 
         return (
