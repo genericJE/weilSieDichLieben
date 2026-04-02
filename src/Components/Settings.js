@@ -71,7 +71,7 @@ const Settings = (props) => {
     >
       <div
         style={{
-          flex: "1 1 50%",
+          flex: isMobile ? "1 1 50%" : "1 1 auto",
           minHeight: 0,
           padding: "16px",
           paddingBottom: "16px",
@@ -345,7 +345,7 @@ const Settings = (props) => {
       <div
         style={{
           padding: "16px",
-          flex: "1 1 50%",
+          flex: isMobile ? "1 1 50%" : "0 0 auto",
           minHeight: 0,
           display: "flex",
           overflow: "hidden",
@@ -403,15 +403,16 @@ const Settings = (props) => {
               display: "flex",
               alignItems: "center",
               marginBottom: "8px",
+              justifyContent: "space-between",
             }}
           >
-            <div style={{ marginRight: "8px" }}>
+            <div style={{ marginRight: "8px", flex: 1 }}>
               {getTranslation(props.language, "resetCookieConsent")}
             </div>
             <Button
               type="link"
               onClick={props.onResetCookieConsent}
-              style={{ padding: 0 }}
+              style={{ padding: 0, marginLeft: "6px", marginRight: "4px", flexShrink: 0 }}
             >
               {getTranslation(props.language, "reset")}
             </Button>
