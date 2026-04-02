@@ -59,10 +59,9 @@ const Settings = (props) => {
     <div
       className={props.settingsClass}
       style={{
-        height: isMobile ? "calc(100vh - 64px)" : "calc(100vh - 144px)",
+        height: isMobile ? "calc(100vh - 64px)" : "calc(100vh - 96px)",
         backgroundColor: "lightgray",
         margin: isMobile ? 0 : "16px",
-        marginBottom: "0px",
         borderRadius: isMobile ? 0 : "20px",
         position: "relative",
         display: "flex",
