@@ -15,6 +15,7 @@ const DepartureTable = (props) => {
   const isMobile = useIsMobile();
   const FONTSIZE = props.fontSize;
   const FONTFAMILYNAME = "DotMatrix";
+  const whenHeaderKey = props.hideDepartureCol ? "departure" : "when";
 
   const mobileFontSize = isMobile ? FONTSIZE * 0.85 : FONTSIZE;
 
@@ -180,7 +181,7 @@ const DepartureTable = (props) => {
             {getTranslation(props.language, "line")}
           </Col>
           <Col style={styles.columnNameClickable} span={props.hideDepartureCol ? 18 : 9} onClick={() => handleSort("direction")}>
-            {getTranslation(props.language, "destination")}{" "}
+            {getTranslation(props.language, "direction")}{" "}
             {sortField === "direction" && sortOrder !== "off" && (sortOrder === "asc" ? "↑" : "↓")}
           </Col>
           {!props.hideDepartureCol && (
@@ -190,7 +191,7 @@ const DepartureTable = (props) => {
             </Col>
           )}
           <Col style={styles.columnName} span={2}>
-            {getTranslation(props.language, "when")}
+            {getTranslation(props.language, whenHeaderKey)}
           </Col>
         </Row>
       )}
@@ -202,10 +203,10 @@ const DepartureTable = (props) => {
             {getTranslation(props.language, "line")}
           </Col>
           <Col style={styles.columnName} span={12}>
-            {getTranslation(props.language, "destination")}
+            {getTranslation(props.language, "direction")}
           </Col>
           <Col style={{ ...styles.columnName, textAlign: "right" }} span={8}>
-            {getTranslation(props.language, "when")}
+            {getTranslation(props.language, whenHeaderKey)}
           </Col>
         </Row>
       )}
