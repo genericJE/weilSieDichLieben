@@ -15,6 +15,7 @@ const DepartureTable = (props) => {
   const isMobile = useIsMobile();
   const FONTSIZE = props.fontSize;
   const FONTFAMILYNAME = "DotMatrix";
+  const whenHeaderKey = props.hideDepartureCol ? "departure" : "when";
 
   const mobileFontSize = isMobile ? FONTSIZE * 0.85 : FONTSIZE;
 
@@ -100,7 +101,7 @@ const DepartureTable = (props) => {
         }
 
         return `<${tag}>`;
-      }
+      },
     );
   };
 
@@ -179,18 +180,33 @@ const DepartureTable = (props) => {
           <Col style={styles.columnName} span={4}>
             {getTranslation(props.language, "line")}
           </Col>
-          <Col style={styles.columnNameClickable} span={props.hideDepartureCol ? 16 : 9} onClick={() => handleSort("direction")}>
-            {getTranslation(props.language, "destination")}{" "}
-            {sortField === "direction" && sortOrder !== "off" && (sortOrder === "asc" ? "↑" : "↓")}
+          <Col
+            style={styles.columnNameClickable}
+            span={props.hideDepartureCol ? 16 : 9}
+            onClick={() => handleSort("direction")}
+          >
+            {getTranslation(props.language, "direction")}{" "}
+            {sortField === "direction" &&
+              sortOrder !== "off" &&
+              (sortOrder === "asc" ? "↑" : "↓")}
           </Col>
           {!props.hideDepartureCol && (
-            <Col style={styles.columnNameClickable} span={9} onClick={() => handleSort("departureName")}>
+            <Col
+              style={styles.columnNameClickable}
+              span={9}
+              onClick={() => handleSort("departureName")}
+            >
               {getTranslation(props.language, "departureName")}{" "}
-              {sortField === "departureName" && sortOrder !== "off" && (sortOrder === "asc" ? "↑" : "↓")}
+              {sortField === "departureName" &&
+                sortOrder !== "off" &&
+                (sortOrder === "asc" ? "↑" : "↓")}
             </Col>
           )}
-          <Col style={{ ...styles.columnName, textAlign: "right" }} span={props.hideDepartureCol ? 4 : 2}>
-            {getTranslation(props.language, "when")}
+          <Col
+            style={{ ...styles.columnName, textAlign: "right" }}
+            span={props.hideDepartureCol ? 4 : 2}
+          >
+            {getTranslation(props.language, whenHeaderKey)}
           </Col>
         </Row>
       )}
@@ -202,162 +218,198 @@ const DepartureTable = (props) => {
             {getTranslation(props.language, "line")}
           </Col>
           <Col style={styles.columnName} span={12}>
-            {getTranslation(props.language, "destination")}
+            {getTranslation(props.language, "direction")}
           </Col>
           <Col style={{ ...styles.columnName, textAlign: "right" }} span={8}>
-            {getTranslation(props.language, "when")}
+            {getTranslation(props.language, whenHeaderKey)}
           </Col>
         </Row>
       )}
 
       {/* Mobile: Grouped view */}
-      {isMobile && Object.entries(getGroupedData()).map(([groupName, items]) => (
-        <div key={groupName}>
-          {/* Group Header */}
-          <div
-            style={styles.groupHeader}
-            onClick={() => {
-              const firstItemWithTrip = items.find(item => item.tripId);
-              if (firstItemWithTrip) {
-                setSelectedStopLocation(firstItemWithTrip.stopLocation);
-                setRadarModalOpen(true);
-              }
-            }}
-          >
-            <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
-              <span>{getTranslation(props.language, "departure")}: {groupName}</span>
-              {items.some(item => item.tripId) && (
-                <img
-                  src={radarIcon}
-                  alt="radar"
-                  style={{ width: mobileFontSize * 0.8, height: mobileFontSize * 0.8 }}
-                />
-              )}
-            </span>
-          </div>
-          {/* Group Items */}
-          {items.map((data) => {
-            const remarkText = processRemarks(data.remarks);
-            return (
-              <div key={data.key} style={{ display: "flex", flexDirection: "column" }}>
-                <Row style={styles.dataRow}>
-                  <Col style={styles.column} span={4}>
-                    {data.lineName}
-                  </Col>
-                  <Col style={styles.column} span={12}>
-                    {data.direction}
-                  </Col>
-                  <Col style={{ ...styles.column, textAlign: "right" }} span={8}>
-                    {data.when == null
-                      ? getTranslation(props.language, "cancelled")
-                      : data.when > 0
-                      ? `${data.when} ${getTranslation(props.language, "minutes")}`
-                      : getTranslation(props.language, "now")}
-                  </Col>
-                </Row>
-                {remarkText && props.remarksVisibility && (
-                  <Marquee
-                    speed={30}
-                    play={!isPaused}
-                    style={styles.marquee}
-                    onMouseEnter={() => setIsPaused(true)}
-                    onMouseLeave={() => setIsPaused(false)}
-                  >
-                    <span
-                      dangerouslySetInnerHTML={{ __html: sanitizeHTML(remarkText) }}
-                      onClick={(e) => e.target.tagName === "A" && e.stopPropagation()}
-                    />
-                  </Marquee>
+      {isMobile &&
+        Object.entries(getGroupedData()).map(([groupName, items]) => (
+          <div key={groupName}>
+            {/* Group Header */}
+            <div
+              style={styles.groupHeader}
+              onClick={() => {
+                const firstItemWithTrip = items.find((item) => item.tripId);
+                if (firstItemWithTrip) {
+                  setSelectedStopLocation(firstItemWithTrip.stopLocation);
+                  setRadarModalOpen(true);
+                }
+              }}
+            >
+              <span
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                  width: "100%",
+                }}
+              >
+                <span>
+                  {getTranslation(props.language, "departure")}: {groupName}
+                </span>
+                {items.some((item) => item.tripId) && (
+                  <img
+                    src={radarIcon}
+                    alt="radar"
+                    style={{
+                      width: mobileFontSize * 0.8,
+                      height: mobileFontSize * 0.8,
+                    }}
+                  />
                 )}
-              </div>
-            );
-          })}
-        </div>
-      ))}
+              </span>
+            </div>
+            {/* Group Items */}
+            {items.map((data) => {
+              const remarkText = processRemarks(data.remarks);
+              return (
+                <div
+                  key={data.key}
+                  style={{ display: "flex", flexDirection: "column" }}
+                >
+                  <Row style={styles.dataRow}>
+                    <Col style={styles.column} span={4}>
+                      {data.lineName}
+                    </Col>
+                    <Col style={styles.column} span={12}>
+                      {data.direction}
+                    </Col>
+                    <Col
+                      style={{ ...styles.column, textAlign: "right" }}
+                      span={8}
+                    >
+                      {data.when == null
+                        ? getTranslation(props.language, "cancelled")
+                        : data.when > 0
+                          ? `${data.when} ${getTranslation(props.language, "minutes")}`
+                          : getTranslation(props.language, "now")}
+                    </Col>
+                  </Row>
+                  {remarkText && props.remarksVisibility && (
+                    <Marquee
+                      speed={30}
+                      play={!isPaused}
+                      style={styles.marquee}
+                      onMouseEnter={() => setIsPaused(true)}
+                      onMouseLeave={() => setIsPaused(false)}
+                    >
+                      <span
+                        dangerouslySetInnerHTML={{
+                          __html: sanitizeHTML(remarkText),
+                        }}
+                        onClick={(e) =>
+                          e.target.tagName === "A" && e.stopPropagation()
+                        }
+                      />
+                    </Marquee>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+        ))}
 
       {/* Desktop: Regular view */}
-      {!isMobile && getSortedData().map((data) => {
-        const remarkText = processRemarks(data.remarks);
+      {!isMobile &&
+        getSortedData().map((data) => {
+          const remarkText = processRemarks(data.remarks);
 
-        return (
-          <div
-            key={data.key}
-            style={{ display: "flex", flexDirection: "column" }}
-          >
-            <Row style={styles.dataRow}>
-              <Col style={styles.column} span={4}>
-                {data.lineName}
-              </Col>
-              <Col style={styles.column} span={props.hideDepartureCol ? 16 : 9}>
-                {data.direction}
-              </Col>
-              {!props.hideDepartureCol && (
-                <Col style={styles.column} span={9}>
-                  {data.tripId ? (
-                  <Popover
-                    content={
-                      <RadarMap
-                        stopLocation={data.stopLocation}
-                        dataSource={props.dataSource}
-                        language={props.language}
-                      />
-                    }
-                    trigger="click"
-                    placement="right"
-                    overlayStyle={{ width: 520, backgroundColor: "lightGray", borderRadius: "8px" }}
-                  >
-                    <span
-                      style={{
-                        cursor: "pointer",
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "4px",
-                      }}
-                    >
-                      {data.departureName}
-                        <img
-                        src={radarIcon}
-                        alt="radar"
-                        style={{
-                          width: FONTSIZE,
-                          height: FONTSIZE,
+          return (
+            <div
+              key={data.key}
+              style={{ display: "flex", flexDirection: "column" }}
+            >
+              <Row style={styles.dataRow}>
+                <Col style={styles.column} span={4}>
+                  {data.lineName}
+                </Col>
+                <Col
+                  style={styles.column}
+                  span={props.hideDepartureCol ? 16 : 9}
+                >
+                  {data.direction}
+                </Col>
+                {!props.hideDepartureCol && (
+                  <Col style={styles.column} span={9}>
+                    {data.tripId ? (
+                      <Popover
+                        content={
+                          <RadarMap
+                            stopLocation={data.stopLocation}
+                            dataSource={props.dataSource}
+                            language={props.language}
+                          />
+                        }
+                        trigger="click"
+                        placement="right"
+                        overlayStyle={{
+                          width: 520,
+                          backgroundColor: "lightGray",
+                          borderRadius: "8px",
                         }}
-                      />
-                    </span>
-                  </Popover>
-                ) : (
-                  data.departureName
+                      >
+                        <span
+                          style={{
+                            cursor: "pointer",
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "4px",
+                          }}
+                        >
+                          {data.departureName}
+                          <img
+                            src={radarIcon}
+                            alt="radar"
+                            style={{
+                              width: FONTSIZE,
+                              height: FONTSIZE,
+                            }}
+                          />
+                        </span>
+                      </Popover>
+                    ) : (
+                      data.departureName
+                    )}
+                  </Col>
                 )}
-              </Col>
-              )}
-              <Col style={{ ...styles.column, textAlign: "right" }} span={props.hideDepartureCol ? 4 : 2}>
-                {data.when == null
-                  ? getTranslation(props.language, "cancelled")
-                  : data.when > 0
-                  ? `${data.when} ${getTranslation(props.language, "minutes")}`
-                  : getTranslation(props.language, "now")}
-              </Col>
-            </Row>
+                <Col
+                  style={{ ...styles.column, textAlign: "right" }}
+                  span={props.hideDepartureCol ? 4 : 2}
+                >
+                  {data.when == null
+                    ? getTranslation(props.language, "cancelled")
+                    : data.when > 0
+                      ? `${data.when} ${getTranslation(props.language, "minutes")}`
+                      : getTranslation(props.language, "now")}
+                </Col>
+              </Row>
 
-            {remarkText && props.remarksVisibility && (
-              <Marquee
-                speed={30}
-                play={!isPaused}
-                style={styles.marquee}
-                onMouseEnter={() => setIsPaused(true)}
-                onMouseLeave={() => setIsPaused(false)}
-              >
-                <span
-                  dangerouslySetInnerHTML={{ __html: sanitizeHTML(remarkText) }}
-                  onClick={(e) =>
-                    e.target.tagName === "A" && e.stopPropagation()
-                  }
-                />
-              </Marquee>
-            )}
-          </div>
-        );
-      })}
+              {remarkText && props.remarksVisibility && (
+                <Marquee
+                  speed={30}
+                  play={!isPaused}
+                  style={styles.marquee}
+                  onMouseEnter={() => setIsPaused(true)}
+                  onMouseLeave={() => setIsPaused(false)}
+                >
+                  <span
+                    dangerouslySetInnerHTML={{
+                      __html: sanitizeHTML(remarkText),
+                    }}
+                    onClick={(e) =>
+                      e.target.tagName === "A" && e.stopPropagation()
+                    }
+                  />
+                </Marquee>
+              )}
+            </div>
+          );
+        })}
 
       {/* Mobile Radar Modal */}
       {isMobile && (
@@ -369,7 +421,7 @@ const DepartureTable = (props) => {
           centered
           styles={{
             body: { padding: 0 },
-            content: { padding: 0 }
+            content: { padding: 0 },
           }}
           className="mobile-fullscreen-modal"
         >
