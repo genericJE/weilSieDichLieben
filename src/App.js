@@ -72,6 +72,7 @@ const App = () => {
   const [hamburgerMenuOpen, setHamburgerMenuOpen] = useState(false);
   const [fontSizeModalOpen, setFontSizeModalOpen] = useState(false);
   const autoHideTimeoutRef = useRef(null);
+  const lastMousePosition = useRef({ x: null, y: null });
   const instanceIdCounter = useRef(0);
   // Measure the shell bars so the content area can reserve their real height.
   const headerRef = useRef(null);
@@ -231,6 +232,13 @@ const App = () => {
 
   useEffect(() => {
     // Handle auto-hide functionality
+    const handleMouseMove = (e) => {
+      const prev = lastMousePosition.current;
+      if (prev.x === e.clientX && prev.y === e.clientY) return;
+      lastMousePosition.current = { x: e.clientX, y: e.clientY };
+      handleUserActivity();
+    };
+
     const handleUserActivity = () => {
       if (autoHideEnabled && !settingsAreVisible) {
         setUiVisible(true);
@@ -246,7 +254,7 @@ const App = () => {
     };
 
     buildUrlOutOfSelectedStations(selectedStations);
-    document.addEventListener("mousemove", handleUserActivity);
+    document.addEventListener("mousemove", handleMouseMove);
     document.addEventListener("touchstart", handleUserActivity);
 
     if (autoHideEnabled && !settingsAreVisible) {
@@ -256,7 +264,7 @@ const App = () => {
     }
 
     return () => {
-      document.removeEventListener("mousemove", handleUserActivity);
+      document.removeEventListener("mousemove", handleMouseMove);
       document.removeEventListener("touchstart", handleUserActivity);
       if (autoHideTimeoutRef.current) {
         clearTimeout(autoHideTimeoutRef.current);
