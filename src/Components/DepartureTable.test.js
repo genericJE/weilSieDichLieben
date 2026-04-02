@@ -136,8 +136,8 @@ describe('DepartureTable sorting', () => {
 
     expect(screen.queryByText(/Departure from/i)).toBeNull();
 
-    const destinationHeaderColumn = screen.getByText(/Destination/i, { selector: '.ant-col' });
-    const whenHeaderColumn = screen.getByText(/Departure in/i, { selector: '.ant-col' });
+    const destinationHeaderColumn = screen.getByText(/Direction/i, { selector: '.ant-col' });
+    const whenHeaderColumn = screen.getByText(/^Departure$/i, { selector: '.ant-col' });
     const whenDataColumn = screen.getByText('3 min', { selector: '.ant-col' });
 
     expect(destinationHeaderColumn.className).toContain('ant-col-16');
