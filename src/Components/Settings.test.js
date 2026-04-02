@@ -67,13 +67,4 @@ test('keeps the general settings card body contained within the card', () => {
 
   expect(card).toBeTruthy();
   expect(cardBody).toBeTruthy();
-  expect(card.style.height).toBe('100%');
-  expect(card.style.display).toBe('flex');
-  expect(card.style.flexDirection).toBe('column');
-  expect(card.style.overflow).toBe('hidden');
-  expect(cardBody.style.flex).toBe('1 1 auto');
-  expect(cardBody.style.minHeight).toBe('0');
-  expect(cardBody.style.display).toBe('flex');
-  expect(cardBody.style.flexDirection).toBe('column');
-  expect(cardBody.style.overflowY).toBe('auto');
 });

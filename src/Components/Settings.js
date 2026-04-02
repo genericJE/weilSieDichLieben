@@ -55,6 +55,108 @@ const Settings = (props) => {
     flexShrink: 0,
   };
 
+  const renderGeneralSettingsCard = () => (
+    <Card
+      className="general-settings-card"
+      style={{
+        boxShadow: "3px 3px 10px 0px rgba(0,0,0,0.5)",
+      }}
+      size="small"
+      title={getTranslation(props.language, "generalSettings")}
+    >
+      <div
+        style={{
+          display: "flex",
+          marginBottom: "8px",
+          alignItems: "center",
+        }}
+      >
+        <div
+          style={{
+            marginRight: "8px",
+          }}
+        >
+          {getTranslation(props.language, "language")}
+        </div>
+        <Select
+          options={getLanguageOptions()}
+          value={props.language}
+          onChange={(value) => {
+            props.onLanguageChange(value);
+          }}
+          style={{ width: "120px" }}
+        />
+      </div>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          marginBottom: "8px",
+          justifyContent: "space-between",
+        }}
+      >
+        <div style={{ marginRight: "8px", flex: 1 }}>
+          {getTranslation(props.language, "resetCookieConsent")}
+        </div>
+        <Button
+          type="link"
+          onClick={props.onResetCookieConsent}
+          style={{ padding: 0, marginLeft: "6px", marginRight: "4px", flexShrink: 0 }}
+        >
+          {getTranslation(props.language, "reset")}
+        </Button>
+      </div>
+      <div style={{ display: "flex", marginBottom: "8px", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ marginRight: "8px", flex: 1 }}>
+          {getTranslation(props.language, "showRemarks")}
+        </div>
+        <Switch
+          style={toggleSwitchStyle}
+          onChange={(checked) => {
+            props.onRemarksVisibilityChange(checked);
+          }}
+          checked={props.remarksVisibility}
+        />
+      </div>
+      <div style={{ display: "flex", marginBottom: "8px", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ marginRight: "8px", flex: 1 }}>
+          {getTranslation(props.language, "showStandardRemarks")}
+        </div>
+        <Switch
+          style={toggleSwitchStyle}
+          onChange={(checked) => {
+            props.onStandardRemarksVisibilityChange(checked);
+          }}
+          checked={props.standardRemarksVisibility}
+        />
+      </div>
+      <div style={{ display: "flex", marginBottom: "8px", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ marginRight: "8px", flex: 1 }}>
+          {getTranslation(props.language, "hideHeaderFooter")}
+        </div>
+        <Switch
+          style={toggleSwitchStyle}
+          onChange={(checked) => {
+            props.onAutoHideChange(checked);
+          }}
+          checked={props.autoHideEnabled}
+        />
+      </div>
+      <div style={{ display: "flex", marginBottom: "8px", alignItems: "center", justifyContent: "space-between" }}>
+        <div style={{ marginRight: "8px", flex: 1 }}>
+          {getTranslation(props.language, "hideDepartureFromColumn")}
+        </div>
+        <Switch
+          style={toggleSwitchStyle}
+          onChange={(checked) => {
+            props.onHideDepartureColChange(checked);
+          }}
+          checked={props.hideDepartureCol}
+        />
+      </div>
+    </Card>
+  );
+
   return (
     <div
       className={props.settingsClass}
@@ -71,15 +173,17 @@ const Settings = (props) => {
     >
       <div
         style={{
-          flex: isMobile ? "1 1 50%" : "1 1 auto",
+          flex: 1,
           minHeight: 0,
           padding: "16px",
-          paddingBottom: "16px",
           overflowY: "auto",
           overflowX: "hidden",
         }}
       >
-        <Row gutter={[16, 16]} wrap={true} style={{ margin: 0 }}>
+        <Row gutter={[16, 16]} wrap={true} align="stretch" style={{ margin: 0 }}>
+          <Col xs={24} sm={12} md={8} lg={6} style={{ display: "flex" }}>
+            {renderGeneralSettingsCard()}
+          </Col>
           {props.selectedStations.map((station) => {
             return (
               <Col key={station.instanceId} xs={24} sm={12} md={8} lg={6}>
@@ -341,131 +445,6 @@ const Settings = (props) => {
           onStationSelect={props.onStationSelect}
           language={props.language}
         />
-      </div>
-      <div
-        style={{
-          padding: "16px",
-          flex: isMobile ? "1 1 50%" : "0 0 auto",
-          minHeight: 0,
-          display: "flex",
-          overflow: "hidden",
-          backgroundColor: "lightgray",
-        }}
-      >
-        <Card
-          className="general-settings-card"
-          style={{
-            boxShadow: "3px 3px 10px 0px rgba(0,0,0,0.5)",
-            height: "100%",
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            overflow: "hidden",
-          }}
-          styles={{
-            body: {
-              flex: "1 1 auto",
-              minHeight: 0,
-              display: "flex",
-              flexDirection: "column",
-              overflowY: "auto",
-              paddingRight: "4px",
-            },
-          }}
-          size="small"
-          title={getTranslation(props.language, "generalSettings")}
-        >
-          <div
-            style={{
-              display: "flex",
-              marginBottom: "8px",
-              alignItems: "center",
-            }}
-          >
-            <div
-              style={{
-                marginRight: "8px",
-              }}
-            >
-              {getTranslation(props.language, "language")}
-            </div>
-            <Select
-              options={getLanguageOptions()}
-              value={props.language}
-              onChange={(value) => {
-                props.onLanguageChange(value);
-              }}
-              style={{ width: "120px" }}
-            />
-          </div>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              marginBottom: "8px",
-              justifyContent: "space-between",
-            }}
-          >
-            <div style={{ marginRight: "8px", flex: 1 }}>
-              {getTranslation(props.language, "resetCookieConsent")}
-            </div>
-            <Button
-              type="link"
-              onClick={props.onResetCookieConsent}
-              style={{ padding: 0, marginLeft: "6px", marginRight: "4px", flexShrink: 0 }}
-            >
-              {getTranslation(props.language, "reset")}
-            </Button>
-          </div>
-          <div style={{ display: "flex", marginBottom: "8px", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ marginRight: "8px", flex: 1 }}>
-              {getTranslation(props.language, "showRemarks")}
-            </div>
-            <Switch
-              style={toggleSwitchStyle}
-              onChange={(checked) => {
-                props.onRemarksVisibilityChange(checked);
-              }}
-              checked={props.remarksVisibility}
-            />
-          </div>
-          <div style={{ display: "flex", marginBottom: "8px", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ marginRight: "8px", flex: 1 }}>
-              {getTranslation(props.language, "showStandardRemarks")}
-            </div>
-            <Switch
-              style={toggleSwitchStyle}
-              onChange={(checked) => {
-                props.onStandardRemarksVisibilityChange(checked);
-              }}
-              checked={props.standardRemarksVisibility}
-            />
-          </div>
-          <div style={{ display: "flex", marginBottom: "8px", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ marginRight: "8px", flex: 1 }}>
-              {getTranslation(props.language, "hideHeaderFooter")}
-            </div>
-            <Switch
-              style={toggleSwitchStyle}
-              onChange={(checked) => {
-                props.onAutoHideChange(checked);
-              }}
-              checked={props.autoHideEnabled}
-            />
-          </div>
-          <div style={{ display: "flex", marginBottom: "8px", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ marginRight: "8px", flex: 1 }}>
-              {getTranslation(props.language, "hideDepartureFromColumn")}
-            </div>
-            <Switch
-              style={toggleSwitchStyle}
-              onChange={(checked) => {
-                props.onHideDepartureColChange(checked);
-              }}
-              checked={props.hideDepartureCol}
-            />
-          </div>
-        </Card>
       </div>
     </div>
   );
