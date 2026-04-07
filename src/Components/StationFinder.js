@@ -15,7 +15,9 @@ const StationFinder = (props) => {
   useEffect(() => {
     const fetchUrl = baseFetchUrl + queryStr;
     if (queryStr !== "") {
-      fetch(fetchUrl)
+      fetch(fetchUrl, {
+          headers: { "User-Agent": "https://weilsiedichlieben.de" },
+        })
         .then((res) => res.json())
         .then((res) => {
           prepareOptionsData(res);

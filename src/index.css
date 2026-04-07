@@ -1,3 +1,30 @@
+@font-face {
+  font-family: "DotMatrix";
+  src: url("./assets/fonts/DotMatrix.ttf") format("truetype");
+  font-display: swap;
+  unicode-range:
+    U+0020-005F,
+    U+0061-007E,
+    U+00A0,
+    U+00A3,
+    U+00A9,
+    U+00AB,
+    U+00AD,
+    U+00BB,
+    U+00C4,
+    U+00C5-U+00C6,
+    U+00D6,
+    U+00D8,
+    U+00DC,
+    U+00DF,
+    U+00E4,
+    U+00E5-U+00E6,
+    U+00F2-U+00F3,
+    U+00F6,
+    U+00F8,
+    U+00FC;
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
@@ -14,11 +41,6 @@ code {
 
 antd-custom-cell {
   background-color: aqua;
-}
-
-@font-face {
-  font-family: "DotMatrix";
-  src: url("/public/fonts/DotMatrix.ttf") format("truetype");
 }
 
 .pulse-animation {

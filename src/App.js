@@ -413,7 +413,9 @@ const App = () => {
 
   const checkIfApiIsAvailable = () => {
     // check if API is available by fetching a stop
-    fetch("https://v6.bvg.transport.rest/stops/900017101/departures")
+    fetch("https://v6.bvg.transport.rest/stops/900017101/departures", {
+      headers: { "User-Agent": "https://weilsiedichlieben.de" },
+    })
       .then((response) => {
         if (response.status === 200) {
           setApiIsAvailable(true);
@@ -696,7 +698,7 @@ const App = () => {
         <Title level={5}>Bereitstellung der Daten</Title>
         <Space direction="vertical" size={1}>
           <Text>
-            <a href="https://www.transport.rest">
+            <a href="https://transport.rest">
               transport.rest transit APIs
             </a>
           </Text>
