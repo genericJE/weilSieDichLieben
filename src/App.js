@@ -1074,7 +1074,7 @@ const App = () => {
   };
 
   // Reserve shell space only while the bars are visible.
-  const footerVisible = uiVisible && !(isMobile && settingsAreVisible);
+  const footerVisible = uiVisible && !settingsAreVisible;
   const headerOffset = uiVisible ? uiLayout.headerHeight : 0;
   const footerOffset = footerVisible ? uiLayout.footerHeight : 0;
 
