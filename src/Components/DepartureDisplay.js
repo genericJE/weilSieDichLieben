@@ -207,6 +207,7 @@ const DepartureDisplay = (props) => {
         dataSource={columnData}
         remarksVisibility={props.remarksVisibility}
         hideDepartureCol={props.hideDepartureCol}
+        hideRadar={props.hideRadar}
         language={props.language}
         statusMessage={getStatusMessage()}
       />
