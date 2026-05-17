@@ -465,6 +465,18 @@ const Settings = (props) => {
               checked={props.hideDepartureCol}
             />
           </div>
+          <div style={{ display: "flex", marginBottom: "8px", alignItems: "center", justifyContent: "space-between" }}>
+            <div style={{ marginRight: "8px", flex: 1 }}>
+              {getTranslation(props.language, "hideVehicleRadar")}
+            </div>
+            <Switch
+              style={toggleSwitchStyle}
+              onChange={(checked) => {
+                props.onHideRadarChange(checked);
+              }}
+              checked={props.hideRadar}
+            />
+          </div>
         </Card>
       </div>
     </div>

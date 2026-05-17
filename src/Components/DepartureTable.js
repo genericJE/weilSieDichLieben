@@ -236,6 +236,37 @@ const DepartureTable = (props) => {
             span={props.hideDepartureCol ? 4 : 2}
           >
             <span style={{ position: "absolute", right: 0, whiteSpace: "nowrap" }}>
+              {props.hideDepartureCol && !props.hideRadar && (() => {
+                const firstItemWithTrip = getSortedData().find(item => item.tripId);
+                if (!firstItemWithTrip) return null;
+                return (
+                  <Popover
+                    content={
+                      <RadarMap
+                        stopLocation={firstItemWithTrip.stopLocation}
+                        dataSource={props.dataSource}
+                        language={props.language}
+                      />
+                    }
+                    trigger="click"
+                    placement="bottomLeft"
+                    overlayStyle={{ width: 520, backgroundColor: "lightGray", borderRadius: "8px" }}
+                  >
+                    <img
+                      src={radarIcon}
+                      alt="radar"
+                      style={{
+                        width: FONTSIZE,
+                        height: FONTSIZE,
+                        cursor: "pointer",
+                        marginRight: 6,
+                        verticalAlign: "middle",
+                        filter: "brightness(0)",
+                      }}
+                    />
+                  </Popover>
+                );
+              })()}
               {getTranslation(props.language, whenHeaderKey)}
             </span>
           </Col>
@@ -252,7 +283,7 @@ const DepartureTable = (props) => {
             {getTranslation(props.language, "direction")}
           </Col>
           <Col style={{ ...styles.columnName, textAlign: "right" }} span={8}>
-            {props.hideDepartureCol && (() => {
+            {props.hideDepartureCol && !props.hideRadar && (() => {
               const firstItemWithTrip = getSortedData().find(item => item.tripId);
               if (!firstItemWithTrip) return null;
               return (
@@ -286,6 +317,7 @@ const DepartureTable = (props) => {
           <div
             style={styles.groupHeader}
             onClick={() => {
+              if (props.hideRadar) return;
               const firstItemWithTrip = items.find(item => item.tripId);
               if (firstItemWithTrip) {
                 setSelectedStopLocation(firstItemWithTrip.stopLocation);
@@ -295,7 +327,7 @@ const DepartureTable = (props) => {
           >
             <span style={{ display: "flex", alignItems: "center", justifyContent: "space-between", width: "100%" }}>
               <span>{getTranslation(props.language, "departure")}: {groupName}</span>
-              {items.some(item => item.tripId) && (
+              {!props.hideRadar && items.some(item => item.tripId) && (
                 <img
                   src={radarIcon}
                   alt="radar"
@@ -329,7 +361,7 @@ const DepartureTable = (props) => {
               </Col>
               {!props.hideDepartureCol && (
                 <Col style={styles.column} span={9}>
-                  {data.tripId ? (
+                  {data.tripId && !props.hideRadar ? (
                   <Popover
                     content={
                       <RadarMap
