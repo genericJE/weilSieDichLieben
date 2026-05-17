@@ -53,6 +53,7 @@ const App = () => {
   const [donationModalVisible, setDonationModalVisible] = useState(false);
   const [remarksVisibility, setRemarksVisibility] = useState(true);
   const [hideDepartureCol, setHideDepartureCol] = useState(false);
+  const [hideRadar, setHideRadar] = useState(false);
   const [standardRemarksVisibility, setStandardRemarksVisibility] =
     useState(true);
   const [autoHideEnabled, setAutoHideEnabled] = useState(false);
@@ -150,6 +151,7 @@ const App = () => {
     fetchFontSizeFromCookie();
     fetchRemarksVisibilityFromCookie();
     fetchHideDepartureColFromCookie();
+    fetchHideRadarFromCookie();
     fetchStandardRemarksVisibilityFromCookie();
     fetchLanguageFromCookie();
 
@@ -390,6 +392,18 @@ const App = () => {
     }
   };
 
+  const fetchHideRadarFromCookie = () => {
+    if (!cookieConsent) return;
+    const cookieHideRadar = document.cookie.replace(
+      /(?:(?:^|.*;\s*)hideRadar\s*=\s*([^;]*).*$)|^.*$/,
+      "$1"
+    );
+
+    if (cookieHideRadar != null && cookieHideRadar !== "") {
+      setHideRadar(JSON.parse(cookieHideRadar));
+    }
+  };
+
   const fetchAutoHideFromCookie = () => {
     if (!cookieConsent) return;
     const cookieAutoHide = document.cookie.replace(
@@ -450,6 +464,11 @@ const App = () => {
   const onHideDepartureColChange = (value) => {
     setHideDepartureCol(value);
     saveDataInCookie("hideDepartureCol", value);
+  };
+
+  const onHideRadarChange = (value) => {
+    setHideRadar(value);
+    saveDataInCookie("hideRadar", value);
   };
 
   const onStandardRemarksVisibilityChange = (value) => {
@@ -1088,6 +1107,7 @@ const App = () => {
               selectedStations={selectedStations}
               remarksVisibility={remarksVisibility}
               hideDepartureCol={hideDepartureCol}
+              hideRadar={hideRadar}
               standardRemarksVisibility={standardRemarksVisibility}
               language={language}
             />
@@ -1111,6 +1131,8 @@ const App = () => {
             onAutoHideChange={onAutoHideChange}
             hideDepartureCol={hideDepartureCol}
             onHideDepartureColChange={onHideDepartureColChange}
+            hideRadar={hideRadar}
+            onHideRadarChange={onHideRadarChange}
             language={language}
             onLanguageChange={onLanguageChange}
             onResetCookieConsent={resetCookieConsent}

@@ -238,5 +238,73 @@ describe('DepartureTable sorting', () => {
       const headerRadar = radarIcons.find((img) => img.style.cursor === 'pointer');
       expect(headerRadar).toBeUndefined();
     });
+
+    test('hideRadar removes the radar icon from the mobile flat header', () => {
+      const dataWithStopLocations = dataSource.map((item) => ({
+        ...item,
+        stopLocation: { id: 'stop' + item.key, latitude: 52.5, longitude: 13.4 },
+      }));
+      render(
+        <DepartureTable
+          {...baseProps}
+          hideDepartureCol
+          hideRadar
+          dataSource={dataWithStopLocations}
+        />
+      );
+
+      expect(screen.queryAllByAltText('radar')).toHaveLength(0);
+    });
+
+    test('hideRadar removes the icon and click target from mobile group headers', () => {
+      render(<DepartureTable {...baseProps} hideRadar dataSource={[...dataSource]} />);
+
+      expect(screen.queryAllByAltText('radar')).toHaveLength(0);
+    });
+  });
+
+  describe('hideRadar on desktop', () => {
+    test('desktop departure name is plain text when hideRadar is on', () => {
+      render(<DepartureTable {...baseProps} hideRadar dataSource={[...dataSource]} />);
+
+      expect(screen.queryAllByAltText('radar')).toHaveLength(0);
+      const stationA = screen.getByText('Station A');
+      expect(stationA.style.cursor).toBe('');
+    });
+
+    test('desktop hideDepartureCol shows a radar icon in the time column header', () => {
+      const dataWithStopLocations = dataSource.map((item) => ({
+        ...item,
+        stopLocation: { id: 'stop' + item.key, latitude: 52.5, longitude: 13.4 },
+      }));
+      render(
+        <DepartureTable
+          {...baseProps}
+          hideDepartureCol
+          dataSource={dataWithStopLocations}
+        />
+      );
+
+      const radarIcons = screen.getAllByAltText('radar');
+      expect(radarIcons).toHaveLength(1);
+      expect(radarIcons[0].style.cursor).toBe('pointer');
+    });
+
+    test('desktop hideDepartureCol with hideRadar shows no radar icon', () => {
+      const dataWithStopLocations = dataSource.map((item) => ({
+        ...item,
+        stopLocation: { id: 'stop' + item.key, latitude: 52.5, longitude: 13.4 },
+      }));
+      render(
+        <DepartureTable
+          {...baseProps}
+          hideDepartureCol
+          hideRadar
+          dataSource={dataWithStopLocations}
+        />
+      );
+
+      expect(screen.queryAllByAltText('radar')).toHaveLength(0);
+    });
   });
 });
