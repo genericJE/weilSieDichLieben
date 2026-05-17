@@ -212,5 +212,32 @@ describe('DepartureTable sorting', () => {
       expect(screen.getByText('3 min')).toBeTruthy();
       expect(screen.getByText('5 min')).toBeTruthy();
     });
+
+    test('renders a radar icon in the mobile header when hideDepartureCol is on', () => {
+      const dataWithStopLocations = dataSource.map((item) => ({
+        ...item,
+        stopLocation: { id: 'stop' + item.key, latitude: 52.5, longitude: 13.4 },
+      }));
+      render(
+        <DepartureTable
+          {...baseProps}
+          hideDepartureCol
+          dataSource={dataWithStopLocations}
+        />
+      );
+
+      const radarIcons = screen.getAllByAltText('radar');
+      expect(radarIcons.length).toBe(1);
+      expect(radarIcons[0].style.cursor).toBe('pointer');
+    });
+
+    test('does not render a header radar icon when hideDepartureCol is off', () => {
+      render(<DepartureTable {...baseProps} dataSource={[...dataSource]} />);
+
+      const radarIcons = screen.queryAllByAltText('radar');
+      // grouped view shows one icon per group header, none should sit in the column header row
+      const headerRadar = radarIcons.find((img) => img.style.cursor === 'pointer');
+      expect(headerRadar).toBeUndefined();
+    });
   });
 });

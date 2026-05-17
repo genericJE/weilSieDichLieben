@@ -252,6 +252,28 @@ const DepartureTable = (props) => {
             {getTranslation(props.language, "direction")}
           </Col>
           <Col style={{ ...styles.columnName, textAlign: "right" }} span={8}>
+            {props.hideDepartureCol && (() => {
+              const firstItemWithTrip = getSortedData().find(item => item.tripId);
+              if (!firstItemWithTrip) return null;
+              return (
+                <img
+                  src={radarIcon}
+                  alt="radar"
+                  onClick={() => {
+                    setSelectedStopLocation(firstItemWithTrip.stopLocation);
+                    setRadarModalOpen(true);
+                  }}
+                  style={{
+                    width: mobileFontSize * 0.8,
+                    height: mobileFontSize * 0.8,
+                    cursor: "pointer",
+                    marginRight: 6,
+                    verticalAlign: "middle",
+                    filter: "brightness(0)",
+                  }}
+                />
+              );
+            })()}
             {getTranslation(props.language, whenHeaderKey)}
           </Col>
         </Row>
