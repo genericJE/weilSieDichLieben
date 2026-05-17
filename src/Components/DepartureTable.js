@@ -156,6 +156,43 @@ const DepartureTable = (props) => {
     return groups;
   };
 
+  const renderMobileRow = (data) => {
+    const remarkText = processRemarks(data.remarks);
+    return (
+      <div key={data.key} style={{ display: "flex", flexDirection: "column" }}>
+        <Row style={styles.dataRow}>
+          <Col style={styles.column} span={4}>
+            {data.lineName}
+          </Col>
+          <Col style={styles.column} span={12}>
+            {data.direction}
+          </Col>
+          <Col style={{ ...styles.column, textAlign: "right" }} span={8}>
+            {data.when == null
+              ? getTranslation(props.language, "cancelled")
+              : data.when > 0
+              ? `${data.when} ${getTranslation(props.language, "minutes")}`
+              : getTranslation(props.language, "now")}
+          </Col>
+        </Row>
+        {remarkText && props.remarksVisibility && (
+          <Marquee
+            speed={30}
+            play={!isPaused}
+            style={styles.marquee}
+            onMouseEnter={() => setIsPaused(true)}
+            onMouseLeave={() => setIsPaused(false)}
+          >
+            <span
+              dangerouslySetInnerHTML={{ __html: sanitizeHTML(remarkText) }}
+              onClick={(e) => e.target.tagName === "A" && e.stopPropagation()}
+            />
+          </Marquee>
+        )}
+      </div>
+    );
+  };
+
   return (
     <div
       style={{
@@ -220,8 +257,8 @@ const DepartureTable = (props) => {
         </Row>
       )}
 
-      {/* Mobile: Grouped view */}
-      {isMobile && Object.entries(getGroupedData()).map(([groupName, items]) => (
+      {/* Mobile: Grouped view by departure name */}
+      {isMobile && !props.hideDepartureCol && Object.entries(getGroupedData()).map(([groupName, items]) => (
         <div key={groupName}>
           {/* Group Header */}
           <div
@@ -245,45 +282,12 @@ const DepartureTable = (props) => {
               )}
             </span>
           </div>
-          {/* Group Items */}
-          {items.map((data) => {
-            const remarkText = processRemarks(data.remarks);
-            return (
-              <div key={data.key} style={{ display: "flex", flexDirection: "column" }}>
-                <Row style={styles.dataRow}>
-                  <Col style={styles.column} span={4}>
-                    {data.lineName}
-                  </Col>
-                  <Col style={styles.column} span={12}>
-                    {data.direction}
-                  </Col>
-                  <Col style={{ ...styles.column, textAlign: "right" }} span={8}>
-                    {data.when == null
-                      ? getTranslation(props.language, "cancelled")
-                      : data.when > 0
-                      ? `${data.when} ${getTranslation(props.language, "minutes")}`
-                      : getTranslation(props.language, "now")}
-                  </Col>
-                </Row>
-                {remarkText && props.remarksVisibility && (
-                  <Marquee
-                    speed={30}
-                    play={!isPaused}
-                    style={styles.marquee}
-                    onMouseEnter={() => setIsPaused(true)}
-                    onMouseLeave={() => setIsPaused(false)}
-                  >
-                    <span
-                      dangerouslySetInnerHTML={{ __html: sanitizeHTML(remarkText) }}
-                      onClick={(e) => e.target.tagName === "A" && e.stopPropagation()}
-                    />
-                  </Marquee>
-                )}
-              </div>
-            );
-          })}
+          {items.map(renderMobileRow)}
         </div>
       ))}
+
+      {/* Mobile: Flat view when the departure column is hidden */}
+      {isMobile && props.hideDepartureCol && getSortedData().map(renderMobileRow)}
 
       {/* Desktop: Regular view */}
       {!isMobile && getSortedData().map((data) => {
