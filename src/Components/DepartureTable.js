@@ -2,7 +2,7 @@ import { Row, Col, Popover, Modal } from "antd";
 import React, { useState } from "react";
 import Marquee from "react-fast-marquee";
 import { getTranslation } from "../dictionary";
-import radarIcon from "../images/radar.png";
+import radarIcon from "../images/radar.svg";
 import RadarMap from "./RadarMap";
 import useIsMobile from "../hooks/useIsMobile";
 
@@ -256,11 +256,11 @@ const DepartureTable = (props) => {
                       src={radarIcon}
                       alt="radar"
                       style={{
-                        width: FONTSIZE,
-                        height: FONTSIZE,
+                        width: FONTSIZE * 0.7,
+                        height: FONTSIZE * 0.7,
                         cursor: "pointer",
                         marginRight: 6,
-                        verticalAlign: "middle",
+                        verticalAlign: "text-bottom",
                         filter: "brightness(0)",
                       }}
                     />
@@ -295,11 +295,11 @@ const DepartureTable = (props) => {
                     setRadarModalOpen(true);
                   }}
                   style={{
-                    width: mobileFontSize * 0.8,
-                    height: mobileFontSize * 0.8,
+                    width: mobileFontSize * 0.7,
+                    height: mobileFontSize * 0.7,
                     cursor: "pointer",
                     marginRight: 6,
-                    verticalAlign: "middle",
+                    verticalAlign: "text-bottom",
                     filter: "brightness(0)",
                   }}
                 />
