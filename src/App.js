@@ -27,7 +27,6 @@ import {
   message,
   Typography,
   Space,
-  notification,
 } from "antd";
 import DonationDisplay from "./Components/DonationDisplay";
 import CookieBanner from "./Components/CookieBanner";
@@ -85,60 +84,6 @@ const App = () => {
     fetchHideDepartureColFromCookie();
     fetchStandardRemarksVisibilityFromCookie();
     fetchLanguageFromCookie();
-
-    // Check notification version
-    fetch(
-      "https://raw.githubusercontent.com/NikBLN/weilSieDichLieben/main/notification-version.json"
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        const storedVersion = cookieConsent
-          ? document.cookie.replace(
-              /(?:(?:^|.*;\s*)notificationVersion\s*=\s*([^;]*).*$)|^.*$/,
-              "$1"
-            ) || "0"
-          : "0";
-        if (data.version > parseInt(storedVersion)) {
-          const title =
-            typeof data.title === "object"
-              ? data.title[language] ||
-                data.title.de ||
-                "Neue Features verfügbar!"
-              : data.title || "Neue Features verfügbar!";
-          const message =
-            typeof data.message === "object"
-              ? data.message[language] ||
-                data.message.de ||
-                "In den Einstellungen (⚙️) sind ein paar neue Einstellungen dazugekommen. Schau doch mal vorbei!"
-              : data.message ||
-                "In den Einstellungen (⚙️) sind ein paar neue Einstellungen dazugekommen. Schau doch mal vorbei!";
-
-          notification.info({
-            message: title,
-            description: message,
-            placement: "topRight",
-            duration: 0,
-            btn: (
-              <Button
-                size="small"
-                onClick={() => {
-                  if (cookieConsent) {
-                    document.cookie = `notificationVersion=${
-                      data.version
-                    };path=/;expires=${new Date(
-                      Date.now() + 31536000000
-                    ).toUTCString()}`;
-                  }
-                  notification.destroy();
-                }}
-              >
-                Nicht mehr anzeigen
-              </Button>
-            ),
-          });
-        }
-      })
-      .catch(console.error);
 
     return () => {
       clearInterval(apiAvailableInterval);
