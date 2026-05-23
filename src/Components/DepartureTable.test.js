@@ -137,12 +137,15 @@ describe('DepartureTable sorting', () => {
     expect(screen.queryByText(/Departure from/i)).toBeNull();
 
     const destinationHeaderColumn = screen.getByText(/Direction/i, { selector: '.ant-col' });
-    const whenHeaderColumn = screen.getByText(/^Departure$/i, { selector: '.ant-col' });
+    const whenHeaderText = screen.getByText(/^Departure$/i);
+    const whenHeaderColumn = whenHeaderText.closest('.ant-col');
     const whenDataColumn = screen.getByText('3 min', { selector: '.ant-col' });
 
     expect(destinationHeaderColumn.className).toContain('ant-col-16');
     expect(whenHeaderColumn.className).toContain('ant-col-4');
-    expect(whenHeaderColumn.style.textAlign).toBe('right');
+    expect(whenHeaderColumn.style.position).toBe('relative');
+    expect(whenHeaderText.style.position).toBe('absolute');
+    expect(whenHeaderText.style.right).toBe('0px');
     expect(whenDataColumn.className).toContain('ant-col-4');
     expect(whenDataColumn.style.textAlign).toBe('right');
   });
@@ -177,5 +180,36 @@ describe('DepartureTable sorting', () => {
       'Station A',
       'Station B',
     ]);
+  });
+
+  describe('mobile rendering', () => {
+    beforeEach(() => {
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 375,
+      });
+    });
+
+    test('renders a per departure group header by default', () => {
+      render(<DepartureTable {...baseProps} dataSource={[...dataSource]} />);
+
+      expect(screen.getByText(/Departure:\s*Station A/i)).toBeTruthy();
+      expect(screen.getByText(/Departure:\s*Station B/i)).toBeTruthy();
+    });
+
+    test('hideDepartureCol removes the departure group headers on mobile', () => {
+      render(
+        <DepartureTable
+          {...baseProps}
+          hideDepartureCol
+          dataSource={[...dataSource]}
+        />
+      );
+
+      expect(screen.queryByText(/Departure:\s*Station/i)).toBeNull();
+      expect(screen.getByText('3 min')).toBeTruthy();
+      expect(screen.getByText('5 min')).toBeTruthy();
+    });
   });
 });
