@@ -155,7 +155,7 @@ const RadarMap = ({ stopLocation, dataSource = [], language = "de", isMobile = f
       >
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
-          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
           referrerPolicy="strict-origin-when-cross-origin"
         />
         {markers}
