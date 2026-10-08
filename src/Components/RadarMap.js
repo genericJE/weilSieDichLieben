@@ -18,6 +18,9 @@ const KM_TO_DEGREES_LAT = 2 / 111; // 1 degree latitude ≈ 111km
 const RADAR_SEARCH_RADIUS_KM = 2;
 const API_RESULTS_LIMIT = 100;
 
+// A host embedding the map can point the layer elsewhere, e.g. at a proxy.
+export const DEFAULT_TILE_URL = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+
 // Function to get container styles based on mobile state
 const getContainerStyle = (isMobile) => ({
   height: isMobile ? "calc(100vh - 55px)" : "300px",
@@ -30,7 +33,13 @@ const getContainerStyle = (isMobile) => ({
   color: "black",
 });
 
-const RadarMap = ({ stopLocation, dataSource = [], language = "de", isMobile = false }) => {
+const RadarMap = ({
+  stopLocation,
+  dataSource = [],
+  language = "de",
+  isMobile = false,
+  tileUrl = DEFAULT_TILE_URL,
+}) => {
   const [vehicles, setVehicles] = useState(null);
   const [center, setCenter] = useState([52.52, 13.405]);
   const mapRef = useRef(null);
@@ -155,7 +164,7 @@ const RadarMap = ({ stopLocation, dataSource = [], language = "de", isMobile = f
       >
         <TileLayer
           attribution="&copy; OpenStreetMap contributors"
-          url="https://tile.openstreetmap.org/{z}/{x}/{y}.png"
+          url={tileUrl}
           referrerPolicy="strict-origin-when-cross-origin"
         />
         {markers}
