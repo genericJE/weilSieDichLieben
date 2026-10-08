@@ -249,6 +249,7 @@ const DepartureTable = (props) => {
                         stopLocation={firstItemWithTrip.stopLocation}
                         dataSource={props.dataSource}
                         language={props.language}
+                        tileUrl={props.tileUrl}
                       />
                     }
                     trigger="click"
@@ -371,6 +372,7 @@ const DepartureTable = (props) => {
                         stopLocation={data.stopLocation}
                         dataSource={props.dataSource}
                         language={props.language}
+                        tileUrl={props.tileUrl}
                       />
                     }
                     trigger="click"
@@ -449,6 +451,7 @@ const DepartureTable = (props) => {
             dataSource={props.dataSource}
             language={props.language}
             isMobile={true}
+            tileUrl={props.tileUrl}
           />
         </Modal>
       )}

@@ -3,7 +3,7 @@ import DepartureTable from './DepartureTable';
 import { getTranslation } from '../dictionary';
 jest.mock('react-leaflet', () => ({
   MapContainer: ({ children }) => <div>{children}</div>,
-  TileLayer: () => <div></div>,
+  TileLayer: ({ url }) => <div data-testid="tile-layer" data-url={url}></div>,
   Marker: ({ children }) => <div>{children}</div>,
   Tooltip: ({ children }) => <div>{children}</div>,
 }));
@@ -284,6 +284,43 @@ describe('DepartureTable sorting', () => {
 
       expect(screen.queryByText(/Departure:\s*Station/i)).toBeNull();
       expect(screen.getByText(getTranslation('en', 'departureName'))).toBeTruthy();
+    });
+  });
+
+  describe('tile source', () => {
+    test('tileUrl reaches the radar map opened from the mobile header', async () => {
+      global.fetch = jest.fn(() =>
+        Promise.resolve({
+          json: () =>
+            Promise.resolve({
+              movements: [
+                {
+                  line: { name: 'A', product: 'bus' },
+                  direction: 'Dir',
+                  location: { latitude: 52.51, longitude: 13.41 },
+                },
+              ],
+            }),
+        })
+      );
+      const dataWithStopLocations = dataSource.map((item) => ({
+        ...item,
+        stopLocation: { id: 'stop' + item.key, latitude: 52.5, longitude: 13.4 },
+      }));
+      render(
+        <DepartureTable
+          {...baseProps}
+          isMobile
+          hideDepartureCol
+          tileUrl="https://tiles.test/{z}/{x}/{y}.png"
+          dataSource={dataWithStopLocations}
+        />
+      );
+
+      fireEvent.click(screen.getByAltText('radar'));
+
+      const layer = await screen.findByTestId('tile-layer');
+      expect(layer.dataset.url).toBe('https://tiles.test/{z}/{x}/{y}.png');
     });
   });
 

@@ -176,6 +176,7 @@ const DepartureDisplay = (props) => {
         hideRadar={props.hideRadar}
         language={props.language}
         isMobile={props.isMobile}
+        tileUrl={props.tileUrl}
       />
     </div>
   );
