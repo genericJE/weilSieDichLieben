@@ -171,14 +171,15 @@ describe('DepartureTable sorting', () => {
     const directionHeaderColumn = screen.getByText(/Direction/i, {
       selector: '.ant-col'
     });
-    const whenHeaderColumn = screen.getByText('Departure', {
-      selector: '.ant-col'
-    });
+    // The label sits in a span anchored to the column's right edge (so long
+    // translations overflow leftward), so walk up to the column from the text.
+    const whenHeaderLabel = screen.getByText('Departure');
+    const whenHeaderColumn = whenHeaderLabel.closest('.ant-col');
     const whenDataColumn = screen.getByText('3 min', { selector: '.ant-col' });
 
     expect(directionHeaderColumn.className).toContain('ant-col-16');
     expect(whenHeaderColumn.className).toContain('ant-col-4');
-    expect(whenHeaderColumn.style.textAlign).toBe('right');
+    expect(whenHeaderLabel.style.right).toBe('0px');
     expect(whenDataColumn.className).toContain('ant-col-4');
     expect(whenDataColumn.style.textAlign).toBe('right');
   });
