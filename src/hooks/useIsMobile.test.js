@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import useIsMobile from './useIsMobile';
+import useIsMobile, { MOBILE_BREAKPOINT } from './useIsMobile';
 
 describe('useIsMobile', () => {
   const originalInnerWidth = window.innerWidth;
@@ -32,6 +32,22 @@ describe('useIsMobile', () => {
 
     const { result } = renderHook(() => useIsMobile());
     expect(result.current).toBe(false);
+  });
+
+  it('switches exactly at the exported breakpoint', () => {
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: MOBILE_BREAKPOINT - 1,
+    });
+    expect(renderHook(() => useIsMobile()).result.current).toBe(true);
+
+    Object.defineProperty(window, 'innerWidth', {
+      writable: true,
+      configurable: true,
+      value: MOBILE_BREAKPOINT,
+    });
+    expect(renderHook(() => useIsMobile()).result.current).toBe(false);
   });
 
   it('updates on window resize', () => {

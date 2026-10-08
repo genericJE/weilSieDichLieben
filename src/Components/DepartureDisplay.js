@@ -175,6 +175,7 @@ const DepartureDisplay = (props) => {
         hideDepartureCol={props.hideDepartureCol}
         hideRadar={props.hideRadar}
         language={props.language}
+        isMobile={props.isMobile}
       />
     </div>
   );

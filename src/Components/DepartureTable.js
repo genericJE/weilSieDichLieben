@@ -12,7 +12,10 @@ const DepartureTable = (props) => {
   const [sortField, setSortField] = useState("departureName");
   const [radarModalOpen, setRadarModalOpen] = useState(false);
   const [selectedStopLocation, setSelectedStopLocation] = useState(null);
-  const isMobile = useIsMobile();
+  const viewportIsMobile = useIsMobile();
+  // A host that embeds the table in a box narrower than the viewport (the
+  // Home Assistant card) decides the layout from its own width instead.
+  const isMobile = props.isMobile ?? viewportIsMobile;
   const FONTSIZE = props.fontSize;
   const FONTFAMILYNAME = "DotMatrix";
   const whenHeaderKey = props.hideDepartureCol ? "departure" : "when";

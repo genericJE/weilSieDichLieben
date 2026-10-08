@@ -1,5 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import DepartureTable from './DepartureTable';
+import { getTranslation } from '../dictionary';
 jest.mock('react-leaflet', () => ({
   MapContainer: ({ children }) => <div>{children}</div>,
   TileLayer: () => <div></div>,
@@ -262,6 +263,27 @@ describe('DepartureTable sorting', () => {
       render(<DepartureTable {...baseProps} hideRadar dataSource={[...dataSource]} />);
 
       expect(screen.queryAllByAltText('radar')).toHaveLength(0);
+    });
+  });
+
+  describe('isMobile override', () => {
+    test('isMobile forces the mobile layout on a wide viewport', () => {
+      render(<DepartureTable {...baseProps} isMobile dataSource={[...dataSource]} />);
+
+      expect(screen.getByText(/Departure:\s*Station A/i)).toBeTruthy();
+      expect(screen.queryByText(getTranslation('en', 'departureName'))).toBeNull();
+    });
+
+    test('isMobile={false} keeps the desktop layout on a narrow viewport', () => {
+      Object.defineProperty(window, 'innerWidth', {
+        writable: true,
+        configurable: true,
+        value: 375,
+      });
+      render(<DepartureTable {...baseProps} isMobile={false} dataSource={[...dataSource]} />);
+
+      expect(screen.queryByText(/Departure:\s*Station/i)).toBeNull();
+      expect(screen.getByText(getTranslation('en', 'departureName'))).toBeTruthy();
     });
   });
 
