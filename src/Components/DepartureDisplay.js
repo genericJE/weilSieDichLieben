@@ -3,6 +3,14 @@
 import React, { useEffect, useState, useRef } from "react";
 import DepartureTable from "./DepartureTable";
 
+let lastLoggedFetchError = null;
+const logFetchError = (error) => {
+  const message = error?.message || String(error);
+  if (message === lastLoggedFetchError) return;
+  lastLoggedFetchError = message;
+  console.error("Error fetching departures:", error);
+};
+
 const DepartureDisplay = (props) => {
   const [columnData, setColumnData] = useState([]);
   const departureDataRef = useRef([]);
@@ -108,16 +116,22 @@ const DepartureDisplay = (props) => {
       if (destination) {
         url = `https://v6.bvg.transport.rest/journeys?language=${props.language}&from=${stationId}&to=${destination.id}&departure=${formattedTime}&results=${results}&suburban=${suburban}&subway=${subway}&tram=${tram}&bus=${bus}&ferry=${ferry}&express=${express}&regional=${regional}&remarks=${props.standardRemarksVisibility}`;
         response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} ${response.statusText} from ${url}`);
+        }
         const data = await response.json();
         handleFetchResponse(convertJourneyResultToDepartureData(data.journeys));
       } else {
         url = `https://v6.bvg.transport.rest/stops/${stationId}/departures?language=${props.language}&when=${formattedTime}&results=${results}&suburban=${suburban}&subway=${subway}&tram=${tram}&bus=${bus}&ferry=${ferry}&express=${express}&regional=${regional}&remarks=${props.standardRemarksVisibility}`;
         response = await fetch(url);
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status} ${response.statusText} from ${url}`);
+        }
         const data = await response.json();
         handleFetchResponse(data);
       }
     } catch (error) {
-      console.error("Error fetching departures:", error);
+      logFetchError(error);
       fetchIsInProgress.current = false;
     }
   };
