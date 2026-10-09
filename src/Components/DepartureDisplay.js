@@ -12,9 +12,7 @@ const logFetchError = (error) => {
   console.error("Error fetching departures:", error);
 };
 
-// Why a station's departures could not be loaded, as a dictionary key: the
-// network request itself failed (API down, offline, blocked), the API
-// rate limited us, it answered with an error, or it sent something unreadable.
+// Why a station's departures could not be loaded, as a dictionary key.
 const classifyFetchError = (error) => {
   if (error?.status === 429) return "statusRateLimited";
   if (error?.status) return "statusApiError";
